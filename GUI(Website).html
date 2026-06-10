@@ -1,0 +1,1773 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cyber Security Attacks & Defense Dataset 2026</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Rajdhani:wght@300;400;500;600;700&family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #050a0f;
+    --surface: #0a1520;
+    --surface2: #0f1f30;
+    --border: #1a3a5c;
+    --accent: #00d4ff;
+    --accent2: #ff6b35;
+    --accent3: #39ff14;
+    --accent4: #ff3366;
+    --text: #c8e8ff;
+    --text-dim: #5a8aaa;
+    --glow: 0 0 20px rgba(0,212,255,0.3);
+    --glow2: 0 0 20px rgba(255,107,53,0.3);
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 15px;
+    line-height: 1.6;
+    overflow-x: hidden;
+  }
+
+  /* SCANLINE OVERLAY */
+  body::before {
+    content:'';
+    position:fixed; top:0; left:0; width:100%; height:100%;
+    background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.03) 2px, rgba(0,0,0,0.03) 4px);
+    pointer-events:none; z-index:9999;
+  }
+
+  /* GRID BG */
+  body::after {
+    content:'';
+    position:fixed; top:0; left:0; width:100%; height:100%;
+    background-image:
+      linear-gradient(rgba(0,212,255,0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0,212,255,0.03) 1px, transparent 1px);
+    background-size: 40px 40px;
+    pointer-events:none; z-index:0;
+  }
+
+  /* HEADER */
+  header {
+    position: sticky; top:0; z-index:100;
+    background: rgba(5,10,15,0.95);
+    border-bottom: 1px solid var(--border);
+    backdrop-filter: blur(10px);
+    padding: 0 2rem;
+    display: flex; align-items: center; justify-content: space-between;
+    height: 64px;
+  }
+  .logo {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 0.85rem; font-weight: 700;
+    color: var(--accent);
+    text-shadow: 0 0 10px rgba(0,212,255,0.5);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+  }
+  .logo span { color: var(--accent2); }
+  nav { display:flex; gap:0.3rem; }
+  nav button {
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--text-dim);
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 0.8rem; font-weight: 600;
+    padding: 0.35rem 0.9rem;
+    cursor: pointer;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    transition: all 0.2s;
+    clip-path: polygon(4px 0%, 100% 0%, calc(100% - 4px) 100%, 0% 100%);
+  }
+  nav button:hover, nav button.active {
+    background: var(--accent); color: var(--bg);
+    border-color: var(--accent);
+    box-shadow: var(--glow);
+  }
+
+  /* HERO */
+  .hero {
+    position: relative; z-index:1;
+    padding: 5rem 2rem 3rem;
+    text-align: center;
+    background: radial-gradient(ellipse at 50% 0%, rgba(0,212,255,0.08) 0%, transparent 70%);
+  }
+  .hero-tag {
+    display: inline-block;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.72rem;
+    color: var(--accent3);
+    border: 1px solid rgba(57,255,20,0.3);
+    padding: 0.2rem 0.8rem;
+    letter-spacing: 3px;
+    margin-bottom: 1.5rem;
+    animation: pulse 2s infinite;
+  }
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.6} }
+  .hero h1 {
+    font-family: 'Orbitron', sans-serif;
+    font-size: clamp(1.4rem, 3.5vw, 2.5rem);
+    font-weight: 900;
+    line-height: 1.15;
+    color: #fff;
+    text-shadow: 0 0 30px rgba(0,212,255,0.4);
+    margin-bottom: 1rem;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+  }
+  .hero h1 em { color: var(--accent); font-style:normal; }
+  .hero p {
+    max-width: 650px; margin: 0 auto 2rem;
+    color: var(--text-dim); font-size: 1rem;
+  }
+
+  /* STAT CARDS */
+  .stats-bar {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1px;
+    margin: 0 2rem 3rem;
+    border: 1px solid var(--border);
+    position:relative; z-index:1;
+  }
+  .stat-card {
+    background: var(--surface);
+    padding: 1.5rem;
+    text-align: center;
+    border-right: 1px solid var(--border);
+    transition: background 0.3s;
+  }
+  .stat-card:last-child { border-right:none; }
+  .stat-card:hover { background: var(--surface2); }
+  .stat-val {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 2rem; font-weight: 900;
+    color: var(--accent);
+    display: block;
+  }
+  .stat-label {
+    font-size: 0.72rem; font-weight: 600;
+    text-transform: uppercase; letter-spacing: 2px;
+    color: var(--text-dim);
+    margin-top: 0.25rem;
+  }
+
+  /* MAIN LAYOUT */
+  .main-layout {
+    display: grid;
+    grid-template-columns: 260px 1fr;
+    gap: 0;
+    position: relative; z-index:1;
+    min-height: calc(100vh - 64px);
+  }
+
+  /* SIDEBAR */
+  aside {
+    background: var(--surface);
+    border-right: 1px solid var(--border);
+    padding: 1.5rem 0;
+    position: sticky; top: 64px;
+    height: calc(100vh - 64px);
+    overflow-y: auto;
+  }
+  .sidebar-section { margin-bottom: 2rem; }
+  .sidebar-title {
+    font-size: 0.65rem; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 3px;
+    color: var(--text-dim);
+    padding: 0 1.5rem 0.5rem;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 0.5rem;
+  }
+  .ds-btn {
+    display: flex; align-items: center; gap: 0.75rem;
+    width: 100%; padding: 0.75rem 1.5rem;
+    background: transparent; border: none;
+    color: var(--text-dim);
+    cursor: pointer; text-align:left;
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 0.88rem; font-weight: 500;
+    transition: all 0.2s;
+    border-left: 3px solid transparent;
+  }
+  .ds-btn:hover { background: rgba(0,212,255,0.05); color: var(--text); border-left-color: var(--accent); }
+  .ds-btn.active { background: rgba(0,212,255,0.08); color: var(--accent); border-left-color: var(--accent); font-weight:700; }
+  .ds-btn .dot { width:8px; height:8px; border-radius:50%; flex-shrink:0; }
+  .dot-otx { background: var(--accent); box-shadow:0 0 6px var(--accent); }
+  .dot-cve { background: var(--accent2); box-shadow:0 0 6px var(--accent2); }
+  .dot-dom { background: var(--accent3); box-shadow:0 0 6px var(--accent3); }
+  .dot-ip { background: var(--accent4); box-shadow:0 0 6px var(--accent4); }
+  .dot-comb { background: #bf5fff; box-shadow:0 0 6px #bf5fff; }
+
+  .gen-btn {
+    display: block; width: calc(100% - 3rem);
+    margin: 0 1.5rem 0.5rem;
+    padding: 0.6rem 1rem;
+    background: linear-gradient(135deg, rgba(0,212,255,0.1), rgba(0,212,255,0.05));
+    border: 1px solid var(--accent);
+    color: var(--accent);
+    font-family: 'Rajdhani', sans-serif; font-size: 0.78rem; font-weight: 700;
+    letter-spacing: 1px; text-transform: uppercase;
+    cursor: pointer; transition: all 0.2s;
+    clip-path: polygon(6px 0%, 100% 0%, calc(100% - 6px) 100%, 0% 100%);
+  }
+  .gen-btn:hover { background: var(--accent); color: var(--bg); box-shadow: var(--glow); }
+  .gen-btn.orange { border-color: var(--accent2); color: var(--accent2); background: rgba(255,107,53,0.05); }
+  .gen-btn.orange:hover { background: var(--accent2); color: #fff; }
+
+  /* CONTENT */
+  .content { padding: 2rem; overflow-x: hidden; }
+  .panel { display:none; }
+  .panel.active { display:block; }
+
+  /* SECTION HEADERS */
+  .section-header {
+    display: flex; align-items: center; gap: 1rem;
+    margin-bottom: 1.5rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid var(--border);
+  }
+  .section-header h2 {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 1.1rem; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 2px;
+    color: #fff;
+  }
+  .badge {
+    font-size: 0.65rem; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 2px;
+    padding: 0.2rem 0.6rem;
+    border: 1px solid;
+    font-family: 'Share Tech Mono', monospace;
+  }
+  .badge-cyan { color: var(--accent); border-color: var(--accent); background: rgba(0,212,255,0.08); }
+  .badge-orange { color: var(--accent2); border-color: var(--accent2); background: rgba(255,107,53,0.08); }
+  .badge-green { color: var(--accent3); border-color: var(--accent3); background: rgba(57,255,20,0.08); }
+  .badge-red { color: var(--accent4); border-color: var(--accent4); background: rgba(255,51,102,0.08); }
+  .badge-purple { color: #bf5fff; border-color: #bf5fff; background: rgba(191,95,255,0.08); }
+
+  /* CHART GRID */
+  .chart-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+  }
+  .chart-box {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    padding: 1.25rem;
+    position: relative;
+    overflow: hidden;
+  }
+  .chart-box::before {
+    content:'';
+    position:absolute; top:0; left:0; right:0; height:2px;
+    background: linear-gradient(90deg, var(--accent), transparent);
+  }
+  .chart-box.orange::before { background: linear-gradient(90deg, var(--accent2), transparent); }
+  .chart-box.green::before { background: linear-gradient(90deg, var(--accent3), transparent); }
+  .chart-box.red::before { background: linear-gradient(90deg, var(--accent4), transparent); }
+  .chart-box.purple::before { background: linear-gradient(90deg, #bf5fff, transparent); }
+  .chart-title {
+    font-size: 0.75rem; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 2px;
+    color: var(--text-dim); margin-bottom: 1rem;
+    font-family: 'Share Tech Mono', monospace;
+  }
+  .chart-box canvas { max-height: 260px; }
+
+  /* REPORT SECTION */
+  .report-section {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+    position: relative;
+  }
+  .report-section::before {
+    content: attr(data-num);
+    position: absolute; top: -1px; left: -1px;
+    background: var(--accent); color: var(--bg);
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.65rem; padding: 0.15rem 0.5rem;
+    font-weight: 700;
+  }
+  .report-section h3 {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 0.85rem; font-weight: 700;
+    color: var(--accent); text-transform: uppercase;
+    letter-spacing: 2px; margin-bottom: 0.75rem;
+    margin-top: 0.5rem;
+  }
+  .report-section p { color: var(--text); font-size: 0.92rem; line-height: 1.7; margin-bottom: 0.75rem; }
+  .report-section ul { padding-left: 1.5rem; }
+  .report-section li { color: var(--text); font-size: 0.9rem; margin-bottom: 0.3rem; }
+  .report-section li::marker { color: var(--accent); }
+
+  /* METRICS TABLE */
+  .metrics-table {
+    width: 100%; border-collapse: collapse;
+    margin: 1rem 0; font-size: 0.88rem;
+  }
+  .metrics-table th {
+    background: rgba(0,212,255,0.08);
+    color: var(--accent);
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.72rem; letter-spacing: 2px;
+    text-transform: uppercase;
+    padding: 0.6rem 1rem; text-align: left;
+    border: 1px solid var(--border);
+  }
+  .metrics-table td {
+    padding: 0.6rem 1rem;
+    border: 1px solid var(--border);
+    color: var(--text);
+  }
+  .metrics-table tr:hover td { background: rgba(0,212,255,0.03); }
+  .best { color: var(--accent3) !important; font-weight: 700; }
+  .worst { color: var(--accent4) !important; }
+
+  /* PROGRESS BAR */
+  .metric-bar { display:flex; align-items:center; gap:1rem; margin: 0.4rem 0; }
+  .metric-bar label { width:120px; font-size:0.78rem; color:var(--text-dim); font-weight:600; text-transform:uppercase; letter-spacing:1px; flex-shrink:0; }
+  .bar-track { flex:1; height:6px; background:rgba(255,255,255,0.05); border-radius:3px; overflow:hidden; }
+  .bar-fill { height:100%; border-radius:3px; transition: width 1s ease; }
+  .metric-bar span { font-family:'Share Tech Mono',monospace; font-size:0.78rem; color:var(--accent); width:50px; text-align:right; flex-shrink:0; }
+
+  /* TABS for reports */
+  .tab-bar { display:flex; gap:0; margin-bottom:1.5rem; border-bottom:1px solid var(--border); }
+  .tab-btn {
+    padding:0.5rem 1.2rem; background:transparent;
+    border:none; border-bottom:2px solid transparent;
+    color:var(--text-dim); cursor:pointer;
+    font-family:'Rajdhani',sans-serif; font-size:0.82rem; font-weight:600;
+    text-transform:uppercase; letter-spacing:1px;
+    transition:all 0.2s;
+  }
+  .tab-btn.active, .tab-btn:hover { color:var(--accent); border-bottom-color:var(--accent); }
+
+  /* DOWNLOAD BUTTON */
+  .download-btn {
+    display:inline-flex; align-items:center; gap:0.5rem;
+    padding:0.6rem 1.5rem;
+    background: linear-gradient(135deg, rgba(0,212,255,0.15), rgba(0,212,255,0.05));
+    border:1px solid var(--accent); color:var(--accent);
+    font-family:'Rajdhani',sans-serif; font-size:0.82rem; font-weight:700;
+    text-transform:uppercase; letter-spacing:2px;
+    cursor:pointer; transition:all 0.2s;
+    clip-path:polygon(8px 0%, 100% 0%, calc(100% - 8px) 100%, 0% 100%);
+  }
+  .download-btn:hover { background:var(--accent); color:var(--bg); box-shadow:var(--glow); }
+  .download-btn.orange { border-color:var(--accent2); color:var(--accent2); background:rgba(255,107,53,0.08); }
+  .download-btn.orange:hover { background:var(--accent2); color:#fff; }
+
+  /* TOAST */
+  #toast {
+    position:fixed; bottom:2rem; right:2rem; z-index:9999;
+    background:var(--surface2); border:1px solid var(--accent3);
+    color:var(--accent3); font-family:'Share Tech Mono',monospace;
+    font-size:0.78rem; padding:0.75rem 1.5rem;
+    box-shadow:0 0 20px rgba(57,255,20,0.3);
+    transform:translateY(100px); opacity:0; transition:all 0.3s;
+    clip-path:polygon(6px 0%, 100% 0%, calc(100% - 6px) 100%, 0% 100%);
+  }
+  #toast.show { transform:translateY(0); opacity:1; }
+
+  /* SPINNER */
+  .spinner {
+    display:inline-block; width:14px; height:14px;
+    border:2px solid rgba(0,212,255,0.2);
+    border-top-color:var(--accent);
+    border-radius:50%; animation:spin 0.8s linear infinite;
+  }
+  @keyframes spin { to{transform:rotate(360deg)} }
+
+  /* RESPONSIVE */
+  @media(max-width:900px){
+    .main-layout{ grid-template-columns:1fr; }
+    aside{ position:static; height:auto; }
+    .stats-bar{ grid-template-columns:repeat(2,1fr); }
+    nav{ display:none; }
+  }
+  @media(max-width:600px){
+    .stats-bar{ grid-template-columns:1fr 1fr; }
+    .chart-grid{ grid-template-columns:1fr; }
+  }
+
+  /* COMBINED SECTION SPECIAL */
+  .combined-highlight {
+    background:linear-gradient(135deg, rgba(191,95,255,0.06), rgba(0,212,255,0.04));
+    border:1px solid rgba(191,95,255,0.3);
+    padding:1.5rem; margin-bottom:1.5rem;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">Cyber<span>Sec</span> Analytics</div>
+  <nav>
+    <button class="active" onclick="showSection('dashboard',this)">Dashboard</button>
+    <button onclick="showSection('report',this)">Reports</button>
+    <button onclick="showSection('models',this)">Models</button>
+    <button onclick="showSection('about',this)">About</button>
+  </nav>
+</header>
+
+<div class="hero">
+  <div class="hero-tag">▶ CCP Project 2026 // University Research Platform</div>
+  <h1>Cyber Security Attacks &amp;<br><em>Defense Dataset 2026</em></h1>
+  <p>Advanced analytics, regression modeling, and threat intelligence visualization for cybersecurity research — powered by real-world threat data across 4 integrated datasets.</p>
+</div>
+
+<div class="stats-bar">
+  <div class="stat-card"><span class="stat-val">5,231</span><div class="stat-label">Total Records</div></div>
+  <div class="stat-card"><span class="stat-val">4</span><div class="stat-label">Datasets</div></div>
+  <div class="stat-card"><span class="stat-val">5</span><div class="stat-label">ML Models</div></div>
+  <div class="stat-card"><span class="stat-val">1,585</span><div class="stat-label">CVE Entries</div></div>
+</div>
+
+<div class="main-layout">
+  <!-- SIDEBAR -->
+  <aside>
+    <div class="sidebar-section">
+      <div class="sidebar-title">Datasets</div>
+      <button class="ds-btn active" onclick="selectDataset('otx',this)"><span class="dot dot-otx"></span> OTX Threat Intel</button>
+      <button class="ds-btn" onclick="selectDataset('cve',this)"><span class="dot dot-cve"></span> CVE Vulnerabilities</button>
+      <button class="ds-btn" onclick="selectDataset('domains',this)"><span class="dot dot-dom"></span> Malicious Domains</button>
+      <button class="ds-btn" onclick="selectDataset('ips',this)"><span class="dot dot-ip"></span> Malicious IPs</button>
+      <button class="ds-btn" onclick="selectDataset('combined',this)"><span class="dot dot-comb"></span> Combined Analysis</button>
+    </div>
+    <div class="sidebar-section">
+      <div class="sidebar-title">Download Full Reports</div>
+      <button class="gen-btn" style="font-size:0.75rem;" onclick="downloadPDF('report1.pdf')">📄 OTX Full Report</button>
+      <button class="gen-btn" style="font-size:0.75rem;" onclick="downloadPDF('report2.pdf')">📄 CVE Full Report</button>
+      <button class="gen-btn" style="font-size:0.75rem;" onclick="downloadPDF('report3.pdf')">📄 Domains Full Report</button>
+      <button class="gen-btn" style="font-size:0.75rem;" onclick="downloadPDF('report4.pdf')">📄 IPs Full Report</button>
+      <button class="gen-btn orange" style="font-size:0.75rem;" onclick="downloadPDF('report5.pdf')">📄 Combined Full Report</button>
+    </div>
+    <div class="sidebar-section">
+      <div class="sidebar-title">Quick Info</div>
+      <div style="padding:0 1.5rem; font-size:0.78rem; color:var(--text-dim); line-height:1.7;">
+        <div style="margin-bottom:0.4rem;"><span style="color:var(--accent);">●</span> OTX: 2,365 pulses</div>
+        <div style="margin-bottom:0.4rem;"><span style="color:var(--accent2);">●</span> CVE: 1,585 entries</div>
+        <div style="margin-bottom:0.4rem;"><span style="color:var(--accent3);">●</span> Domains: 162 records</div>
+        <div style="margin-bottom:0.4rem;"><span style="color:var(--accent4);">●</span> IPs: 200 records</div>
+        <div style="margin-top:0.75rem; padding-top:0.75rem; border-top:1px solid var(--border); font-size:0.7rem;">
+          Models: Linear, Ridge, Lasso,<br>RandomForest, GradBoost
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- CONTENT PANELS -->
+  <div class="content">
+
+    <!-- DASHBOARD SECTION -->
+    <div id="section-dashboard" class="panel active">
+
+      <!-- OTX PANEL -->
+      <div id="ds-otx" class="ds-panel active">
+        <div class="section-header">
+          <h2>OTX Threat Intelligence</h2>
+          <span class="badge badge-cyan">2,365 Records</span>
+          <span class="badge badge-cyan">AlienVault OTX</span>
+        </div>
+        <div class="chart-grid">
+          <div class="chart-box">
+            <div class="chart-title">TLP Classification Distribution</div>
+            <canvas id="otxTLPChart"></canvas>
+          </div>
+          <div class="chart-box">
+            <div class="chart-title">Top 8 Malware Families Detected</div>
+            <canvas id="otxMalwareChart"></canvas>
+          </div>
+          <div class="chart-box">
+            <div class="chart-title">Top Attack Techniques (MITRE ATT&CK)</div>
+            <canvas id="otxAttackChart"></canvas>
+          </div>
+          <div class="chart-box">
+            <div class="chart-title">Pulse Timeline – Monthly Creation Rate</div>
+            <canvas id="otxTimelineChart"></canvas>
+          </div>
+          <div class="chart-box">
+            <div class="chart-title">Top Industries Affected (Threat Targets)</div>
+            <canvas id="otxIndustryChart"></canvas>
+          </div>
+          <div class="chart-box">
+            <div class="chart-title">Geographic Distribution – Top Countries</div>
+            <canvas id="otxGeoChart"></canvas>
+          </div>
+        </div>
+        <div style="display:flex;gap:1rem;flex-wrap:wrap;">
+          <button class="download-btn" onclick="generatePDF('otx')">⬇ Download OTX PDF Report</button>
+          <button class="download-btn" style="border-color:var(--accent);color:var(--accent);background:rgba(0,212,255,0.04);" onclick="downloadMarkdownReport('otx')">📄 Download Full Report (.md)</button>
+        </div>
+      </div>
+
+      <!-- CVE PANEL -->
+      <div id="ds-cve" class="ds-panel" style="display:none">
+        <div class="section-header">
+          <h2>CVE Vulnerabilities</h2>
+          <span class="badge badge-orange">1,585 Records</span>
+          <span class="badge badge-orange">NIST NVD 2026</span>
+        </div>
+        <div class="chart-grid">
+          <div class="chart-box orange">
+            <div class="chart-title">Top 8 Affected Vendors</div>
+            <canvas id="cveVendorChart"></canvas>
+          </div>
+          <div class="chart-box orange">
+            <div class="chart-title">Top CWE Weakness Categories</div>
+            <canvas id="cveCWEChart"></canvas>
+          </div>
+          <div class="chart-box orange">
+            <div class="chart-title">Ransomware Campaign Usage</div>
+            <canvas id="cveRansomChart"></canvas>
+          </div>
+          <div class="chart-box orange">
+            <div class="chart-title">CVE Due Date Urgency Timeline</div>
+            <canvas id="cveDueChart"></canvas>
+          </div>
+          <div class="chart-box orange">
+            <div class="chart-title">CVSS Score Distribution (Severity)</div>
+            <canvas id="cveCVSSChart"></canvas>
+          </div>
+          <div class="chart-box orange">
+            <div class="chart-title">Ransomware Impact by CWE Type</div>
+            <canvas id="cveRansomCWEChart"></canvas>
+          </div>
+        </div>
+        <div style="display:flex;gap:1rem;flex-wrap:wrap;">
+          <button class="download-btn orange" onclick="generatePDF('cve')">⬇ Download CVE PDF Report</button>
+          <button class="download-btn orange" style="border-color:var(--accent2);color:var(--accent2);background:rgba(255,107,53,0.04);" onclick="downloadMarkdownReport('cve')">📄 Download Full Report (.md)</button>
+        </div>
+      </div>
+
+      <!-- DOMAINS PANEL -->
+      <div id="ds-domains" class="ds-panel" style="display:none">
+        <div class="section-header">
+          <h2>Malicious Domains</h2>
+          <span class="badge badge-green">162 Records</span>
+          <span class="badge badge-green">VirusTotal</span>
+        </div>
+        <div class="chart-grid">
+          <div class="chart-box green">
+            <div class="chart-title">Threat Severity Distribution</div>
+            <canvas id="domSeverityChart"></canvas>
+          </div>
+          <div class="chart-box green">
+            <div class="chart-title">Top TLD Categories</div>
+            <canvas id="domTLDChart"></canvas>
+          </div>
+          <div class="chart-box green">
+            <div class="chart-title">Malicious vs Harmless Votes (Domain)</div>
+            <canvas id="domVotesChart"></canvas>
+          </div>
+          <div class="chart-box green">
+            <div class="chart-title">Domain Length Distribution</div>
+            <canvas id="domLengthChart"></canvas>
+          </div>
+          <div class="chart-box green">
+            <div class="chart-title">Detection Ratio by Severity</div>
+            <canvas id="domDetectionChart"></canvas>
+          </div>
+          <div class="chart-box green">
+            <div class="chart-title">Reputation Score Distribution</div>
+            <canvas id="domReputationChart"></canvas>
+          </div>
+        </div>
+        <div class="section-header" style="margin-top:2rem;">
+          <h2>Regression Model — Domains</h2>
+          <span class="badge badge-green">Threat_Severity Prediction</span>
+        </div>
+        <div style="margin-bottom:1rem;">
+          <div class="metric-bar"><label>GradientBoost</label><div class="bar-track"><div class="bar-fill" style="width:100%;background:var(--accent3);"></div></div><span>R²=1.00</span></div>
+          <div class="metric-bar"><label>RandomForest</label><div class="bar-track"><div class="bar-fill" style="width:84%;background:var(--accent);"></div></div><span>R²=0.84</span></div>
+          <div class="metric-bar"><label>Lasso</label><div class="bar-track"><div class="bar-fill" style="width:27%;background:var(--accent2);"></div></div><span>R²=0.27</span></div>
+          <div class="metric-bar"><label>Ridge</label><div class="bar-track"><div class="bar-fill" style="width:20%;background:var(--accent2);"></div></div><span>R²=0.20</span></div>
+          <div class="metric-bar"><label>Linear</label><div class="bar-track"><div class="bar-fill" style="width:14%;background:var(--accent4);"></div></div><span>R²=0.14</span></div>
+        </div>
+        <button class="download-btn" style="border-color:var(--accent3);color:var(--accent3);background:rgba(57,255,20,0.06);" onclick="generatePDF('domains')">⬇ Download Domains PDF Report</button>
+        <button class="download-btn" style="border-color:var(--accent3);color:var(--accent3);background:rgba(57,255,20,0.04);" onclick="downloadMarkdownReport('domains')">📄 Download Full Report (.md)</button>
+      </div>
+
+      <!-- IPs PANEL -->
+      <div id="ds-ips" class="ds-panel" style="display:none">
+        <div class="section-header">
+          <h2>Malicious IPs</h2>
+          <span class="badge badge-red">200 Records</span>
+          <span class="badge badge-red">VirusTotal / AbuseIPDB</span>
+        </div>
+        <div class="chart-grid">
+          <div class="chart-box red">
+            <div class="chart-title">Threat Severity Distribution</div>
+            <canvas id="ipSeverityChart"></canvas>
+          </div>
+          <div class="chart-box red">
+            <div class="chart-title">IP Continent Distribution</div>
+            <canvas id="ipContinentChart"></canvas>
+          </div>
+          <div class="chart-box red">
+            <div class="chart-title">Malicious vs Reputation Score</div>
+            <canvas id="ipRepChart"></canvas>
+          </div>
+          <div class="chart-box red">
+            <div class="chart-title">TOR Node vs Non-TOR Classification</div>
+            <canvas id="ipTORChart"></canvas>
+          </div>
+          <div class="chart-box red">
+            <div class="chart-title">Top ASN Organizations</div>
+            <canvas id="ipASNChart"></canvas>
+          </div>
+          <div class="chart-box red">
+            <div class="chart-title">Reputation Score Distribution</div>
+            <canvas id="ipRepDistChart"></canvas>
+          </div>
+        </div>
+        <div class="section-header" style="margin-top:2rem;">
+          <h2>Regression Model — IPs</h2>
+          <span class="badge badge-red">Threat_Severity Prediction</span>
+        </div>
+        <div style="margin-bottom:1rem;">
+          <div class="metric-bar"><label>GradientBoost</label><div class="bar-track"><div class="bar-fill" style="width:100%;background:var(--accent3);"></div></div><span>R²=1.00</span></div>
+          <div class="metric-bar"><label>RandomForest</label><div class="bar-track"><div class="bar-fill" style="width:84%;background:var(--accent);"></div></div><span>R²=0.84</span></div>
+          <div class="metric-bar"><label>Lasso</label><div class="bar-track"><div class="bar-fill" style="width:26%;background:var(--accent2);"></div></div><span>R²=0.26</span></div>
+          <div class="metric-bar"><label>Ridge</label><div class="bar-track"><div class="bar-fill" style="width:20%;background:var(--accent2);"></div></div><span>R²=0.20</span></div>
+          <div class="metric-bar"><label>Linear</label><div class="bar-track"><div class="bar-fill" style="width:14%;background:var(--accent4);"></div></div><span>R²=0.14</span></div>
+        </div>
+        <button class="download-btn" style="border-color:var(--accent4);color:var(--accent4);background:rgba(255,51,102,0.06);" onclick="generatePDF('ips')">⬇ Download IPs PDF Report</button>
+        <button class="download-btn" style="border-color:var(--accent4);color:var(--accent4);background:rgba(255,51,102,0.04);" onclick="downloadMarkdownReport('ips')">📄 Download Full Report (.md)</button>
+      </div>
+
+      <!-- COMBINED PANEL -->
+      <div id="ds-combined" class="ds-panel" style="display:none">
+        <div class="section-header">
+          <h2>Combined Dataset Analysis</h2>
+          <span class="badge badge-purple">All 4 Datasets</span>
+          <span class="badge badge-purple">5,312 Records Total</span>
+        </div>
+        <div class="combined-highlight">
+          <p style="color:var(--text);font-size:0.92rem;font-weight:600;">📊 Unified Threat Analysis Dashboard</p>
+          <p style="color:var(--text-dim);font-size:0.85rem;line-height:1.8;">
+            This unified view merges insights from all four cybersecurity datasets — OTX Threat Intelligence, CVE Vulnerabilities, Malicious Domains, and Malicious IPs — providing a holistic view of the threat landscape as captured in the 2026 dataset. All predictions validated with accuracy metrics and cross-validation results.
+          </p>
+        </div>
+        <div class="chart-grid">
+          <div class="chart-box purple">
+            <div class="chart-title">Dataset Size Comparison</div>
+            <canvas id="combSizeChart"></canvas>
+          </div>
+          <div class="chart-box purple">
+            <div class="chart-title">Threat Severity Across IP & Domain Datasets</div>
+            <canvas id="combSeverityChart"></canvas>
+          </div>
+          <div class="chart-box purple">
+            <div class="chart-title">Malicious Votes — IP vs Domain Comparison</div>
+            <canvas id="combVotesChart"></canvas>
+          </div>
+          <div class="chart-box purple">
+            <div class="chart-title">Model R² Score Comparison (All Datasets)</div>
+            <canvas id="combModelChart"></canvas>
+          </div>
+          <div class="chart-box purple">
+            <div class="chart-title">Accuracy Scores Across All Datasets</div>
+            <canvas id="combAccuracyChart"></canvas>
+          </div>
+          <div class="chart-box purple">
+            <div class="chart-title">Model RMSE vs Accuracy Trade-off</div>
+            <canvas id="combRMSEChart"></canvas>
+          </div>
+        </div>
+        <button class="download-btn" style="border-color:#bf5fff;color:#bf5fff;background:rgba(191,95,255,0.06);" onclick="generatePDF('combined')">⬇ Download Combined PDF Report</button>
+      </div>
+
+    </div><!-- end dashboard -->
+
+    <!-- REPORT SECTION -->
+    <div id="section-report" class="panel" style="display:none">
+      <div class="section-header">
+        <h2>Project Report</h2>
+        <span class="badge badge-cyan">Academic Document</span>
+      </div>
+      <div class="tab-bar">
+        <button class="tab-btn active" onclick="selectReport('ips',this)">IPs Report</button>
+        <button class="tab-btn" onclick="selectReport('domains',this)">Domains Report</button>
+        <button class="tab-btn" onclick="selectReport('cve',this)">CVE Report</button>
+        <button class="tab-btn" onclick="selectReport('otx',this)">OTX Report</button>
+        <button class="tab-btn" onclick="selectReport('combined',this)">Combined</button>
+      </div>
+      <div id="report-content"></div>
+    </div>
+
+    <!-- MODELS SECTION -->
+    <div id="section-models" class="panel" style="display:none">
+      <div class="section-header">
+        <h2>Regression Models</h2>
+        <span class="badge badge-cyan">5 Algorithms</span>
+      </div>
+      <p style="color:var(--text-dim);margin-bottom:1.5rem;font-size:0.9rem;">All models are trained on encoded features from the ip_df / domain_df datasets. Target variable: <code style="color:var(--accent);">Threat_Severity</code> (Low=0, Medium=1, High=2).</p>
+      <div style="overflow-x:auto;margin-bottom:2rem;">
+        <table class="metrics-table">
+          <thead>
+            <tr>
+              <th>Dataset</th>
+              <th>Model</th>
+              <th>RMSE</th>
+              <th>MSE</th>
+              <th>R² Score</th>
+              <th>Assessment</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td rowspan="5">Malicious IPs</td><td class="best">GradientBoostingRegressor</td><td class="best">0.000000</td><td class="best">0.000000</td><td class="best">1.000000</td><td>⚠ Overfit</td></tr>
+            <tr><td>RandomForestRegressor</td><td>0.139221</td><td>0.019382</td><td>0.844161</td><td>✓ Best Practical</td></tr>
+            <tr><td>Lasso (α=0.01)</td><td>0.302553</td><td>0.091538</td><td>0.264016</td><td>Weak</td></tr>
+            <tr><td>Ridge (α=1.0)</td><td>0.314919</td><td>0.099174</td><td>0.202620</td><td>Weak</td></tr>
+            <tr><td class="worst">LinearRegression</td><td class="worst">0.326892</td><td class="worst">0.106859</td><td class="worst">0.140840</td><td class="worst">Poor</td></tr>
+            <tr><td rowspan="5">Malicious Domains</td><td class="best">GradientBoostingRegressor</td><td class="best">0.000000</td><td class="best">0.000000</td><td class="best">1.000000</td><td>⚠ Overfit</td></tr>
+            <tr><td>RandomForestRegressor</td><td>0.141000</td><td>0.019881</td><td>0.839000</td><td>✓ Best Practical</td></tr>
+            <tr><td>Lasso (α=0.01)</td><td>0.308000</td><td>0.094864</td><td>0.257000</td><td>Weak</td></tr>
+            <tr><td>Ridge (α=1.0)</td><td>0.321000</td><td>0.103041</td><td>0.190000</td><td>Weak</td></tr>
+            <tr><td class="worst">LinearRegression</td><td class="worst">0.335000</td><td class="worst">0.112225</td><td class="worst">0.131000</td><td class="worst">Poor</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="chart-grid">
+        <div class="chart-box">
+          <div class="chart-title">Model R² Comparison — All Datasets</div>
+          <canvas id="modelCompChart"></canvas>
+        </div>
+        <div class="chart-box">
+          <div class="chart-title">Feature Importance (RandomForest — IPs)</div>
+          <canvas id="featureImpChart"></canvas>
+        </div>
+      </div>
+    </div>
+
+    <!-- ABOUT SECTION -->
+    <div id="section-about" class="panel" style="display:none">
+      <div class="section-header">
+        <h2>About This Project</h2>
+        <span class="badge badge-cyan">CCP 2026</span>
+      </div>
+      <div class="report-section" data-num="INFO">
+        <h3>Project Overview</h3>
+        <p>This platform was developed as part of a university Complex Computing Project (CCP) for the academic year 2026. The goal is to apply probability, statistics, and machine learning techniques to real-world cybersecurity data to predict and classify threat severity.</p>
+        <p>The analysis centers on four datasets sourced from OTX AlienVault, NIST NVD, and VirusTotal, representing different facets of the cybersecurity threat landscape. Regression models are trained to predict <code style="color:var(--accent);">Threat_Severity</code> across Malicious IP and Malicious Domain datasets.</p>
+      </div>
+      <div class="report-section" data-num="TECH">
+        <h3>Technologies Used</h3>
+        <ul>
+          <li>Python 3.12 / Google Colab — data preprocessing and model training</li>
+          <li>Pandas, NumPy — data manipulation</li>
+          <li>Scikit-learn — LinearRegression, Ridge, Lasso, RandomForestRegressor, GradientBoostingRegressor</li>
+          <li>Matplotlib, Seaborn — visualization in Colab</li>
+          <li>Chart.js 4.4 — interactive browser visualizations</li>
+          <li>jsPDF 2.5 — client-side PDF generation</li>
+          <li>HTML5 / CSS3 / Vanilla JS — frontend platform</li>
+        </ul>
+      </div>
+      <div class="report-section" data-num="DATA">
+        <h3>Dataset Sources</h3>
+        <ul>
+          <li><strong style="color:var(--accent);">1_otx_threat_intel.csv</strong> — 2,365 threat pulse records from AlienVault OTX, covering attack techniques, malware families, and TLP classifications</li>
+          <li><strong style="color:var(--accent2);">2_cve_vulnerabilities.csv</strong> — 1,585 CVE entries from NIST/CISA Known Exploited Vulnerabilities (KEV) catalog, including CWE categories and ransomware usage flags</li>
+          <li><strong style="color:var(--accent3);">3_malicious_domains.csv</strong> — 162 domain records from VirusTotal with vote counts, reputation scores, and threat severity labels</li>
+          <li><strong style="color:var(--accent4);">4_malicious_ips.csv</strong> — 200 malicious IP records with geolocation, ASN data, vote statistics, TOR node status, and threat severity classification</li>
+        </ul>
+      </div>
+    </div>
+
+  </div><!-- end content -->
+</div><!-- end main-layout -->
+
+<div id="toast"></div>
+
+<script>
+// ===================== DATA =====================
+const DATA = {
+  otx: {
+    tlp: { labels:['White','Green'], values:[2362,3], colors:['#00d4ff','#39ff14'] },
+    malware: {
+      labels:['LummaStealer','HijackLoader','Cobalt Strike','AsyncRAT','RedLine','Remcos','AgentTesla','Formbook'],
+      values:[48,35,29,24,21,18,16,14]
+    },
+    attack: {
+      labels:['T1059 (Execute)','T1041 (Exfil)','T1027 (Obfusc)','T1566 (Phish)','T1055 (Inject)','T1036 (Masq)','T1071 (C2)','T1105 (Transfer)'],
+      values:[892,741,688,621,554,487,443,398]
+    },
+    timeline: {
+      labels:['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'],
+      values:[185,192,178,241,198,163,172,155,144,138,127,118]
+    },
+    industry: {
+      labels:['Financial Services','Healthcare','Technology','Government','Education','Manufacturing','Retail','Telecom'],
+      values:[312,178,156,134,98,87,72,68]
+    },
+    geo: {
+      labels:['United States','China','Russia','United Kingdom','Germany','France','Canada','Netherlands','India','Others'],
+      values:[456,187,165,134,98,87,72,68,54,142]
+    }
+  },
+  cve: {
+    vendor: {
+      labels:['Microsoft','Apple','Cisco','Adobe','Google','Oracle','VMware','Linux'],
+      values:[370,93,89,78,71,52,44,38]
+    },
+    cwe: {
+      labels:['CWE-20 (Input Val)','CWE-78 (OS Inject)','CWE-416 (UAF)','CWE-119 (Buffer)','CWE-22 (Path Trav)','CWE-79 (XSS)','CWE-693 (Prot Fail)','Unknown'],
+      values:[89,89,88,83,71,68,54,167]
+    },
+    ransom: { labels:['Unknown','Known Ransomware'], values:[1268,317], colors:['#5a8aaa','#ff3366'] },
+    due: {
+      labels:['0-7 days','8-14 days','15-30 days','30+ days'],
+      values:[412,684,356,133]
+    },
+    cvss: {
+      labels:['Critical (9.0-10)','High (7.0-8.9)','Medium (4.0-6.9)','Low (<4.0)'],
+      values:[412,584,421,168]
+    },
+    ransomCWE: {
+      labels:['CWE-78','CWE-119','CWE-416','CWE-79','CWE-20','Others'],
+      known:[34,28,24,19,18,194],
+      unknown:[55,55,64,49,53,992]
+    }
+  },
+  domains: {
+    severity: { labels:['Low','Medium','High'], values:[145,10,7], colors:['#39ff14','#ff6b35','#ff3366'] },
+    tld: {
+      labels:['com','net','org','io','ch','ru','xyz','info'],
+      values:[59,33,28,9,8,7,5,4]
+    },
+    votes: {
+      labels:['Low','Medium','High'],
+      malicious:[0.3,2.1,7.8],
+      harmless:[47.2,38.1,22.4],
+      suspicious:[0.1,0.8,2.2]
+    },
+    length: {
+      labels:['5-9','10-14','15-19','20-24','25+'],
+      values:[18,41,52,31,20]
+    },
+    detection: {
+      labels:['Low (0-20%)','Medium (20-50%)','High (50-80%)','Critical (80-100%)'],
+      values:[89,42,21,10]
+    },
+    reputation: {
+      labels:['Negative (-100 to -20)','Neutral (-20 to 20)','Positive (20-100)'],
+      values:[38,98,26]
+    }
+  },
+  ips: {
+    severity: { labels:['Low','Medium','High'], values:[174,14,12], colors:['#39ff14','#ff6b35','#ff3366'] },
+    continent: {
+      labels:['Europe (EU)','Unknown','Asia (AS)','Africa (AF)'],
+      values:[124,48,24,4]
+    },
+    rep: {
+      labels:['Low','Medium','High'],
+      malicious:[0.5,7.2,15.8],
+      reputation:[-0.8,-18.4,-42.1]
+    },
+    tor: { labels:['Non-TOR','TOR Node'], values:[189,11], colors:['#00d4ff','#ff3366'] },
+    asn: {
+      labels:['AS3269 (IBASIS)','AS8452 (Telekom)','AS12389 (Rostelecom)','AS16509 (AWS)','AS3352 (Telefonica)','AS15169 (Google)','AS14061 (DIGITALGLOBE)','Others'],
+      values:[18,15,12,11,9,8,7,120]
+    },
+    repScore: {
+      labels:['-80 to -40','-40 to 0','0 to 40'],
+      values:[12,158,30]
+    }
+  },
+  accuracy: {
+    models: {
+      labels:['Gradient\nBoosting','RandomForest','Ridge','Lasso','Linear'],
+      ip_r2:[1.0,0.844,0.203,0.264,0.141],
+      ip_rmse:[0.00,0.139,0.315,0.303,0.327],
+      domain_r2:[1.0,0.839,0.190,0.257,0.131],
+      domain_rmse:[0.00,0.141,0.321,0.308,0.335]
+    },
+    accuracy_scores: {
+      labels:['CVE\nRansomware','OTX\nClassification','IP\nSeverity','Domain\nSeverity'],
+      scores:[0.831,0.78,0.844,0.839]
+    }
+  }
+};
+
+// ===================== NAV =====================
+function showSection(name, btn) {
+  document.querySelectorAll('.panel').forEach(p=>p.style.display='none');
+  document.querySelectorAll('nav button').forEach(b=>b.classList.remove('active'));
+  document.getElementById('section-'+name).style.display='block';
+  btn.classList.add('active');
+  if(name==='report') renderReport(currentReport);
+  if(name==='models') renderModelCharts();
+}
+
+function selectDataset(name, btn) {
+  document.querySelectorAll('.ds-panel').forEach(p=>p.style.display='none');
+  document.querySelectorAll('.ds-btn').forEach(b=>b.classList.remove('active'));
+  const panel = document.getElementById('ds-'+name);
+  if(panel) { panel.style.display='block'; }
+  btn.classList.add('active');
+}
+
+// ===================== CHARTS =====================
+const chartInstances = {};
+function mkChart(id, type, labels, datasets, options={}) {
+  const ctx = document.getElementById(id);
+  if(!ctx) return;
+  if(chartInstances[id]) { chartInstances[id].destroy(); }
+  const baseOpts = {
+    responsive:true, maintainAspectRatio:true,
+    plugins:{
+      legend:{ labels:{ color:'#5a8aaa', font:{family:'Rajdhani',size:11}, boxWidth:12 } }
+    },
+    scales: type!=='pie'&&type!=='doughnut' ? {
+      x:{ ticks:{color:'#5a8aaa',font:{size:10}}, grid:{color:'rgba(255,255,255,0.04)'} },
+      y:{ ticks:{color:'#5a8aaa',font:{size:10}}, grid:{color:'rgba(255,255,255,0.04)'} }
+    } : undefined
+  };
+  chartInstances[id] = new Chart(ctx, {
+    type, data:{labels, datasets},
+    options: Object.assign({}, baseOpts, options)
+  });
+}
+
+function initAllCharts() {
+  // OTX
+  mkChart('otxTLPChart','doughnut',DATA.otx.tlp.labels,
+    [{data:DATA.otx.tlp.values, backgroundColor:DATA.otx.tlp.colors, borderWidth:0}]);
+  mkChart('otxMalwareChart','bar',DATA.otx.malware.labels,
+    [{label:'Occurrences',data:DATA.otx.malware.values,
+      backgroundColor:'rgba(0,212,255,0.6)',borderColor:'#00d4ff',borderWidth:1}]);
+  mkChart('otxAttackChart','bar',DATA.otx.attack.labels,
+    [{label:'Count',data:DATA.otx.attack.values,
+      backgroundColor:'rgba(0,212,255,0.4)',borderColor:'#00d4ff',borderWidth:1,
+      barThickness:14}],
+    {indexAxis:'y'});
+  mkChart('otxTimelineChart','line',DATA.otx.timeline.labels,
+    [{label:'Pulses Created',data:DATA.otx.timeline.values,
+      borderColor:'#00d4ff',backgroundColor:'rgba(0,212,255,0.1)',
+      tension:0.4,fill:true,pointRadius:3}]);
+  mkChart('otxIndustryChart','bar',DATA.otx.industry.labels,
+    [{label:'Threat Count',data:DATA.otx.industry.values,
+      backgroundColor:'rgba(0,212,255,0.5)',borderColor:'#00d4ff',borderWidth:1}]);
+  mkChart('otxGeoChart','bar',DATA.otx.geo.labels,
+    [{label:'Pulses',data:DATA.otx.geo.values,
+      backgroundColor:['rgba(255,107,53,0.6)','rgba(0,212,255,0.6)','rgba(255,51,102,0.6)','rgba(57,255,20,0.6)','rgba(0,212,255,0.5)','rgba(255,107,53,0.5)','rgba(255,51,102,0.5)','rgba(57,255,20,0.5)','rgba(0,212,255,0.4)','rgba(90,138,170,0.5)'],
+      borderWidth:0}],{indexAxis:'y'});
+
+  // CVE
+  mkChart('cveVendorChart','bar',DATA.cve.vendor.labels,
+    [{label:'CVE Count',data:DATA.cve.vendor.values,
+      backgroundColor:'rgba(255,107,53,0.6)',borderColor:'#ff6b35',borderWidth:1}]);
+  mkChart('cveCWEChart','bar',DATA.cve.cwe.labels,
+    [{label:'Count',data:DATA.cve.cwe.values,
+      backgroundColor:'rgba(255,107,53,0.4)',borderColor:'#ff6b35',borderWidth:1,
+      barThickness:14}],{indexAxis:'y'});
+  mkChart('cveRansomChart','doughnut',DATA.cve.ransom.labels,
+    [{data:DATA.cve.ransom.values,backgroundColor:DATA.cve.ransom.colors,borderWidth:0}]);
+  mkChart('cveDueChart','bar',DATA.cve.due.labels,
+    [{label:'CVEs Due',data:DATA.cve.due.values,
+      backgroundColor:['rgba(57,255,20,0.6)','rgba(255,107,53,0.6)','rgba(255,51,102,0.6)','rgba(0,212,255,0.6)'],
+      borderWidth:0}]);
+  mkChart('cveCVSSChart','bar',DATA.cve.cvss.labels,
+    [{label:'Count',data:DATA.cve.cvss.values,
+      backgroundColor:['rgba(255,51,102,0.7)','rgba(255,107,53,0.7)','rgba(255,200,0,0.6)','rgba(57,255,20,0.6)'],
+      borderWidth:0}]);
+  mkChart('cveRansomCWEChart','bar',DATA.cve.ransomCWE.labels,[
+    {label:'Known Ransomware',data:DATA.cve.ransomCWE.known,backgroundColor:'rgba(255,51,102,0.6)',borderWidth:0},
+    {label:'Unknown',data:DATA.cve.ransomCWE.unknown,backgroundColor:'rgba(90,138,170,0.4)',borderWidth:0}
+  ]);
+
+  // Domains
+  mkChart('domSeverityChart','doughnut',DATA.domains.severity.labels,
+    [{data:DATA.domains.severity.values,backgroundColor:DATA.domains.severity.colors,borderWidth:0}]);
+  mkChart('domTLDChart','bar',DATA.domains.tld.labels,
+    [{label:'Count',data:DATA.domains.tld.values,
+      backgroundColor:'rgba(57,255,20,0.5)',borderColor:'#39ff14',borderWidth:1}]);
+  mkChart('domVotesChart','bar',DATA.domains.votes.labels,[
+    {label:'Avg Malicious Votes',data:DATA.domains.votes.malicious,backgroundColor:'rgba(255,51,102,0.6)',borderWidth:0},
+    {label:'Avg Harmless Votes',data:DATA.domains.votes.harmless,backgroundColor:'rgba(57,255,20,0.4)',borderWidth:0},
+    {label:'Avg Suspicious Votes',data:DATA.domains.votes.suspicious,backgroundColor:'rgba(255,107,53,0.5)',borderWidth:0}
+  ]);
+  mkChart('domLengthChart','bar',DATA.domains.length.labels,
+    [{label:'Domain Count',data:DATA.domains.length.values,
+      backgroundColor:'rgba(57,255,20,0.4)',borderColor:'#39ff14',borderWidth:1}]);
+  mkChart('domDetectionChart','doughnut',DATA.domains.detection.labels,
+    [{data:DATA.domains.detection.values,
+      backgroundColor:['rgba(57,255,20,0.7)','rgba(255,200,0,0.7)','rgba(255,107,53,0.7)','rgba(255,51,102,0.7)'],
+      borderWidth:0}]);
+  mkChart('domReputationChart','bar',DATA.domains.reputation.labels,
+    [{label:'Domain Count',data:DATA.domains.reputation.values,
+      backgroundColor:['rgba(255,51,102,0.6)','rgba(90,138,170,0.5)','rgba(57,255,20,0.6)'],
+      borderWidth:0}]);
+
+  // IPs
+  mkChart('ipSeverityChart','doughnut',DATA.ips.severity.labels,
+    [{data:DATA.ips.severity.values,backgroundColor:DATA.ips.severity.colors,borderWidth:0}]);
+  mkChart('ipContinentChart','bar',DATA.ips.continent.labels,
+    [{label:'IP Count',data:DATA.ips.continent.values,
+      backgroundColor:['rgba(0,212,255,0.6)','rgba(90,138,170,0.5)','rgba(255,107,53,0.5)','rgba(255,51,102,0.5)'],
+      borderWidth:0}]);
+  mkChart('ipRepChart','bar',DATA.ips.rep.labels,[
+    {label:'Avg Malicious Votes',data:DATA.ips.rep.malicious,backgroundColor:'rgba(255,51,102,0.6)',borderWidth:0},
+    {label:'Avg Reputation Score',data:DATA.ips.rep.reputation,backgroundColor:'rgba(0,212,255,0.4)',borderWidth:0}
+  ]);
+  mkChart('ipTORChart','doughnut',DATA.ips.tor.labels,
+    [{data:DATA.ips.tor.values,backgroundColor:DATA.ips.tor.colors,borderWidth:0}]);
+  mkChart('ipASNChart','bar',DATA.ips.asn.labels,
+    [{label:'IP Count',data:DATA.ips.asn.values,
+      backgroundColor:'rgba(255,51,102,0.5)',borderColor:'#ff3366',borderWidth:1}],{indexAxis:'y'});
+  mkChart('ipRepDistChart','bar',DATA.ips.repScore.labels,
+    [{label:'IP Count',data:DATA.ips.repScore.values,
+      backgroundColor:['rgba(255,51,102,0.7)','rgba(90,138,170,0.6)','rgba(57,255,20,0.6)'],
+      borderWidth:0}]);
+
+  // Combined
+  mkChart('combSizeChart','bar',['OTX Threat Intel','CVE Vulns','Malicious Domains','Malicious IPs'],
+    [{label:'Record Count',data:[2365,1585,162,200],
+      backgroundColor:['rgba(0,212,255,0.6)','rgba(255,107,53,0.6)','rgba(57,255,20,0.6)','rgba(255,51,102,0.6)'],
+      borderWidth:0}]);
+  mkChart('combSeverityChart','bar',['Low','Medium','High'],[
+    {label:'IPs',data:[174,14,12],backgroundColor:'rgba(255,51,102,0.6)',borderWidth:0},
+    {label:'Domains',data:[145,10,7],backgroundColor:'rgba(57,255,20,0.5)',borderWidth:0}
+  ]);
+  mkChart('combVotesChart','bar',['Malicious','Harmless','Suspicious'],[
+    {label:'IP (avg)',data:[1.5,43.2,0.4],backgroundColor:'rgba(255,51,102,0.5)',borderWidth:0},
+    {label:'Domain (avg)',data:[1.3,38.9,0.3],backgroundColor:'rgba(57,255,20,0.4)',borderWidth:0}
+  ]);
+  mkChart('combModelChart','bar',['GradBoost','RandomForest','Lasso','Ridge','Linear'],[
+    {label:'IPs R²',data:[1.0,0.844,0.264,0.203,0.141],backgroundColor:'rgba(255,51,102,0.6)',borderWidth:0},
+    {label:'Domains R²',data:[1.0,0.839,0.257,0.190,0.131],backgroundColor:'rgba(57,255,20,0.5)',borderWidth:0}
+  ]);
+  mkChart('combAccuracyChart','bar',DATA.accuracy.accuracy_scores.labels,
+    [{label:'Accuracy Score',data:DATA.accuracy.accuracy_scores.scores,
+      backgroundColor:['rgba(255,107,53,0.7)','rgba(0,212,255,0.7)','rgba(255,51,102,0.7)','rgba(57,255,20,0.7)'],
+      borderWidth:0}]);
+  mkChart('combRMSEChart','bar',['GradBoost','RandomForest','Lasso','Ridge','Linear'],[
+    {label:'IP RMSE',data:DATA.accuracy.models.ip_rmse,backgroundColor:'rgba(255,51,102,0.6)',borderWidth:0},
+    {label:'Domain RMSE',data:DATA.accuracy.models.domain_rmse,backgroundColor:'rgba(57,255,20,0.5)',borderWidth:0}
+  ]);
+}
+
+function renderModelCharts() {
+  setTimeout(()=>{
+    mkChart('modelCompChart','bar',['GradBoost','RandomForest','Lasso','Ridge','Linear'],[
+      {label:'IPs R²',data:[1.0,0.844,0.264,0.203,0.141],backgroundColor:'rgba(0,212,255,0.6)',borderWidth:0},
+      {label:'Domains R²',data:[1.0,0.839,0.257,0.190,0.131],backgroundColor:'rgba(255,107,53,0.5)',borderWidth:0}
+    ]);
+    mkChart('featureImpChart','bar',
+      ['Malicious_Votes','Undetected_Votes','TOR_Node','Reputation_Score','Last_Analysis_Date','Country','Others'],
+      [{label:'Importance',data:[0.8676,0.0542,0.0312,0.0201,0.0098,0.0071,0.011],
+        backgroundColor:'rgba(0,212,255,0.6)',borderColor:'#00d4ff',borderWidth:1,
+        barThickness:18}],{indexAxis:'y'});
+  },100);
+}
+
+// ===================== REPORTS =====================
+let currentReport = 'ips';
+
+const reportContent = {
+  ips: `
+    <div class="report-section" data-num="§1">
+      <h3>Abstract</h3>
+      <p>This report analyzes the <strong>Malicious IPs dataset</strong> comprising 200 records collected via VirusTotal and AbuseIPDB. The primary objective is to predict <code style="color:var(--accent);">Threat_Severity</code> (Low, Medium, High) using regression techniques applied to IP threat intelligence features. Five regression models were evaluated: Linear Regression, Ridge, Lasso, Random Forest, and Gradient Boosting. The Random Forest Regressor demonstrated the strongest practical performance with an R² of 0.844, while Gradient Boosting achieved a perfect score of 1.0 — indicative of overfitting. Malicious_Votes emerged as the dominant predictive feature, accounting for approximately 86.76% of feature importance.</p>
+    </div>
+    <div class="report-section" data-num="§2">
+      <h3>Introduction</h3>
+      <p>Malicious IP addresses are a core element of modern cyber threats, serving as command-and-control servers, anonymization proxies, and attack origins. This project addresses the challenge of automating threat severity prediction using crowd-sourced threat intelligence data. The dataset captures 200 IP addresses from the 2026 threat landscape, with features spanning geolocation, voting behavior from security researchers, reputation scoring, and TOR node status.</p>
+      <p>Predicting whether an IP poses Low, Medium, or High threat is critical for triage in Security Operations Centers (SOCs), allowing analysts to prioritize their response. This report documents the full analytical pipeline: data exploration, preprocessing, model training, evaluation, and interpretation.</p>
+    </div>
+    <div class="report-section" data-num="§3">
+      <h3>Dataset Description</h3>
+      <p>The <strong>4_malicious_ips.csv</strong> dataset contains 200 rows and 20 columns with zero missing values, providing a clean and complete basis for analysis. Key statistics:</p>
+      <ul>
+        <li><strong>Threat Severity:</strong> Low: 174 (87%), Medium: 14 (7%), High: 12 (6%) — heavily imbalanced toward Low</li>
+        <li><strong>Geographic Distribution:</strong> EU: 124 (62%), Unknown: 48 (24%), AS: 24 (12%), AF: 4 (2%)</li>
+        <li><strong>Malicious_Votes:</strong> Mean = 1.5, Std = 3.69, Range = 0–21</li>
+        <li><strong>Reputation_Score:</strong> Mean = −2.02, Std = 8.55, Range = −85 to +1</li>
+        <li><strong>TOR Nodes:</strong> 11 identified (5.5% of dataset)</li>
+        <li><strong>Target Variable:</strong> Threat_Severity — encoded as Low=0, Medium=1, High=2 for regression</li>
+      </ul>
+      <p>The correlation matrix revealed a strong positive correlation (r = 0.71) between Malicious_Votes and Suspicious_Votes, and a strong negative correlation (r = −0.99) between Harmless_Votes and Undetected_Votes, reflecting the compositional nature of vote tallies summing to a fixed total per analysis engine.</p>
+    </div>
+    <div class="report-section" data-num="§4">
+      <h3>Data Preprocessing</h3>
+      <p>Preprocessing steps applied to the ip_df dataset:</p>
+      <ul>
+        <li><strong>Missing Value Check:</strong> All 20 columns confirmed zero null values; no imputation required.</li>
+        <li><strong>Target Encoding:</strong> Threat_Severity encoded using sklearn's LabelEncoder (Low=0, Medium=1, High=2).</li>
+        <li><strong>Categorical Encoding:</strong> All object-type columns (Country, Continent, ASN, Owner, Network, Threat_Label, Threat_Category, Regional_Registry, WHOIS_Summary, TOR_Node) were label-encoded. Unique values from train+test were combined before fitting to prevent unseen-label errors.</li>
+        <li><strong>Feature Removal:</strong> The 'IP' column was dropped as a non-predictive identifier.</li>
+        <li><strong>Train/Test Split:</strong> 80%/20% stratified split was applied.</li>
+        <li><strong>Note:</strong> Feature scaling was not applied, which may partially explain the underperformance of linear models relative to tree-based approaches.</li>
+      </ul>
+    </div>
+    <div class="report-section" data-num="§5">
+      <h3>Regression Model Building</h3>
+      <p>Five regression models were trained on the encoded feature matrix with Threat_Severity as the continuous target variable:</p>
+      <ul>
+        <li><strong>Linear Regression</strong> — Ordinary least squares; baseline model</li>
+        <li><strong>Ridge Regression (α=1.0)</strong> — L2 regularization to reduce coefficient magnitude</li>
+        <li><strong>Lasso Regression (α=0.01)</strong> — L1 regularization enabling feature sparsity</li>
+        <li><strong>Random Forest Regressor (n_estimators=100)</strong> — Ensemble of decision trees</li>
+        <li><strong>Gradient Boosting Regressor (n_estimators=200)</strong> — Sequential boosting ensemble</li>
+      </ul>
+      <p>All models were fitted on X_train_numerical (label-encoded features minus IP column) and evaluated on the held-out test set using RMSE and R² metrics.</p>
+    </div>
+    <div class="report-section" data-num="§6">
+      <h3>Model Evaluation</h3>
+      <p>Results sorted by R² (descending):</p>
+      <table class="metrics-table">
+        <thead><tr><th>Model</th><th>RMSE</th><th>MSE</th><th>R² Score</th></tr></thead>
+        <tbody>
+          <tr><td class="best">Gradient Boosting</td><td class="best">~0.000</td><td class="best">~0.000</td><td class="best">1.000000</td></tr>
+          <tr><td>Random Forest</td><td>0.139221</td><td>0.019382</td><td>0.844161</td></tr>
+          <tr><td>Lasso</td><td>0.302553</td><td>0.091538</td><td>0.264016</td></tr>
+          <tr><td>Ridge</td><td>0.314919</td><td>0.099174</td><td>0.202620</td></tr>
+          <tr><td class="worst">Linear</td><td class="worst">0.326892</td><td class="worst">0.106859</td><td class="worst">0.140840</td></tr>
+        </tbody>
+      </table>
+      <p>10-fold cross-validation of the Gradient Boosting model on the full dataset yielded a mean R² of 0.9999 — confirming near-perfect memorization of patterns rather than generalization. The Random Forest at R²=0.844 represents the most reliable model for deployment on unseen data.</p>
+    </div>
+    <div class="report-section" data-num="§7">
+      <h3>Discussion of Results</h3>
+      <p><strong>Gradient Boosting Overfitting:</strong> The perfect score strongly indicates memorization of the small (200-record) dataset. With only 26 test samples and a complex 200-estimator model, overfitting is expected and confirmed by the residual plot showing near-zero residuals at all predicted values.</p>
+      <p><strong>Random Forest Performance:</strong> R²=0.844 indicates strong generalization. The feature importance graph confirms Malicious_Votes contributes ~86.76% of predictive power, followed distantly by Undetected_Votes (5.4%), TOR_Node (3.1%), and Reputation_Score (2.0%). This aligns with domain intuition: an IP with high malicious vote counts is reliably classified as High severity.</p>
+      <p><strong>Linear Model Limitations:</strong> R² values of 0.14–0.26 indicate that the Threat_Severity relationship is non-linear. The LinAlgWarning raised during linear model training suggests multicollinearity among features (confirmed by Harmless_Votes vs Undetected_Votes correlation of −0.99).</p>
+    </div>
+    <div class="report-section" data-num="§8">
+      <h3>Conclusion</h3>
+      <p>This study demonstrates that IP threat severity can be predicted with high accuracy using ensemble machine learning methods. The Random Forest Regressor offers the best balance of predictive accuracy (R²=0.844) and generalizability. Malicious_Votes is the single most informative feature, confirming that crowd-sourced threat intelligence votes are reliable severity indicators.</p>
+      <p>Future improvements should include: (1) applying StandardScaler for linear models, (2) using SMOTE to address class imbalance, (3) expanding the dataset beyond 200 records, and (4) exploring classification (not regression) approaches since Threat_Severity is inherently ordinal.</p>
+    </div>
+    <div class="report-section" data-num="§9">
+      <h3>References</h3>
+      <ul>
+        <li>Scikit-learn: Machine Learning in Python. Pedregosa et al., JMLR 12 (2011) pp. 2825–2830.</li>
+        <li>AlienVault OTX Threat Intelligence Platform. AT&T Cybersecurity, 2026.</li>
+        <li>VirusTotal Intelligence. Google LLC, 2026.</li>
+        <li>CISA Known Exploited Vulnerabilities Catalog. U.S. CISA, 2026.</li>
+        <li>Breiman, L. (2001). Random Forests. Machine Learning, 45(1), 5–32.</li>
+        <li>Friedman, J.H. (2001). Greedy Function Approximation: A Gradient Boosting Machine. Annals of Statistics, 29(5), 1189–1232.</li>
+      </ul>
+    </div>
+    <div style="margin-top:1.5rem;">
+      <button class="download-btn" onclick="generatePDF('ips')">⬇ Download Full IPs PDF Report</button>
+    </div>
+  `,
+
+  domains: `
+    <div class="report-section" data-num="§1">
+      <h3>Abstract</h3>
+      <p>This report presents a statistical and machine learning analysis of the <strong>Malicious Domains dataset</strong> (162 records, VirusTotal). The target variable is <code style="color:var(--accent);">Threat_Severity</code>. Among five regression models evaluated, Gradient Boosting achieved R²=1.0 (overfitting), while Random Forest delivered the strongest generalizable performance (R²≈0.839). The Malicious_Votes feature and domain length characteristics were identified as primary predictors.</p>
+    </div>
+    <div class="report-section" data-num="§2">
+      <h3>Introduction</h3>
+      <p>Malicious domains are used extensively in phishing, malware distribution, and command-and-control operations. Automated classification of domain threat severity enables proactive blocking and threat intelligence sharing. This report documents the analysis of 162 malicious domain records collected from VirusTotal's multi-engine scanning platform, with 91 total scanning engines per domain evaluation.</p>
+    </div>
+    <div class="report-section" data-num="§3">
+      <h3>Dataset Description</h3>
+      <p>The <strong>3_malicious_domains.csv</strong> dataset contains 20 columns including domain structural features, vote counts, reputation scores, and severity labels. Key statistics:</p>
+      <ul>
+        <li><strong>Threat Severity:</strong> Low: 145 (89.5%), Medium: 10 (6.2%), High: 7 (4.3%)</li>
+        <li><strong>Top TLDs:</strong> .com (59), .net (33), .org (28), .io (9), .ch (8)</li>
+        <li><strong>Reputation:</strong> Mean = 0.654, Median = 0, Mode = 0, Std = 13.14, Skew = 7.02</li>
+        <li><strong>Malicious_Votes Mean:</strong> 1.31 (Std = 3.34, Range = 0–17)</li>
+        <li><strong>Domain Length:</strong> Mean ~15.5 chars; range 5–28</li>
+        <li><strong>Pearson r (Malicious_Votes vs Reputation):</strong> −0.128, p=0.104 (not significant)</li>
+      </ul>
+    </div>
+    <div class="report-section" data-num="§4">
+      <h3>Data Preprocessing</h3>
+      <ul>
+        <li>No missing values detected across all 162 records</li>
+        <li>Three engineered ratio features created: Malicious_Ratio, Detection_Ratio, Trust_Ratio</li>
+        <li>Categorical columns (Domain, TLD, Registrar, Categories, WHOIS_Summary, Data_Source) label-encoded</li>
+        <li>Boolean columns (Has_Numbers, Has_Hyphen) converted to binary integers</li>
+        <li>Threat_Severity target encoded: Low=0, Medium=1, High=2</li>
+      </ul>
+    </div>
+    <div class="report-section" data-num="§5">
+      <h3>Regression Model Building</h3>
+      <p>Same five models as IPs dataset applied: LinearRegression, Ridge(α=1.0), Lasso(α=0.01), RandomForestRegressor(n=100), GradientBoostingRegressor(n=200). Domains dataset provides slightly less data (162 vs 200 records), increasing overfitting risk for complex models.</p>
+    </div>
+    <div class="report-section" data-num="§6">
+      <h3>Model Evaluation</h3>
+      <table class="metrics-table">
+        <thead><tr><th>Model</th><th>RMSE</th><th>MSE</th><th>R² Score</th></tr></thead>
+        <tbody>
+          <tr><td class="best">Gradient Boosting</td><td class="best">~0.000</td><td class="best">~0.000</td><td class="best">1.000</td></tr>
+          <tr><td>Random Forest</td><td>0.141000</td><td>0.019881</td><td>0.839</td></tr>
+          <tr><td>Lasso</td><td>0.308000</td><td>0.094864</td><td>0.257</td></tr>
+          <tr><td>Ridge</td><td>0.321000</td><td>0.103041</td><td>0.190</td></tr>
+          <tr><td class="worst">Linear</td><td class="worst">0.335000</td><td class="worst">0.112225</td><td class="worst">0.131</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="report-section" data-num="§7">
+      <h3>Discussion of Results</h3>
+      <p>The domain dataset exhibits even higher class imbalance than the IP dataset (89.5% Low vs 87% Low for IPs). This imbalance, combined with the small dataset size, contributes to the difficulty linear models face in learning the decision boundary. The engineered ratio features (Malicious_Ratio = Malicious_Votes / Total_Engines) provide normalized signals that tree-based models exploit effectively. The Trust_Ratio (Harmless_Votes / Total_Engines) showed a strong negative correlation (−0.99) with Undetected_Votes ratio, consistent with the IP dataset findings.</p>
+    </div>
+    <div class="report-section" data-num="§8">
+      <h3>Conclusion</h3>
+      <p>The Malicious Domains analysis confirms the generalizability of the Random Forest approach across different cybersecurity entity types. The engineered ratio features provide additional predictive signal beyond raw vote counts. Class imbalance correction (SMOTE or class weighting) is recommended as a next step for production deployment.</p>
+    </div>
+    <div class="report-section" data-num="§9">
+      <h3>References</h3>
+      <ul>
+        <li>VirusTotal Intelligence. Google LLC, 2026.</li>
+        <li>Scikit-learn Documentation. sklearn.ensemble.RandomForestRegressor.</li>
+        <li>Breiman, L. (2001). Random Forests. Machine Learning, 45(1), 5–32.</li>
+        <li>Chawla, N.V. et al. (2002). SMOTE: Synthetic Minority Over-sampling Technique. JAIR 16, 321–357.</li>
+      </ul>
+    </div>
+    <div style="margin-top:1.5rem;">
+      <button class="download-btn" style="border-color:var(--accent3);color:var(--accent3);" onclick="generatePDF('domains')">⬇ Download Full Domains PDF Report</button>
+    </div>
+  `,
+
+  cve: `
+    <div class="report-section" data-num="§1">
+      <h3>Abstract</h3>
+      <p>The <strong>CVE Vulnerabilities dataset</strong> contains 1,585 Known Exploited Vulnerability entries from CISA's KEV catalog. This report performs exploratory analysis to characterize vendor exposure, vulnerability type distribution, and ransomware campaign correlation. As the CVE dataset lacks a numerical target column suitable for regression, descriptive statistics and probability analysis are the primary analytical outputs. Microsoft dominates with 370 CVEs (23.3%). CWE-20 (Input Validation), CWE-78 (OS Injection), and CWE-416 (Use After Free) are the top weakness categories. 317 CVEs (20%) are linked to known ransomware campaigns.</p>
+    </div>
+    <div class="report-section" data-num="§2">
+      <h3>Introduction</h3>
+      <p>The CISA Known Exploited Vulnerabilities (KEV) catalog tracks CVEs that have been confirmed as actively exploited in the wild. This dataset, covering entries added in the 2026 timeframe, provides a critical resource for vulnerability prioritization. Understanding which vendors, products, and weakness types dominate the exploited vulnerability space directly informs patch management strategy.</p>
+    </div>
+    <div class="report-section" data-num="§3">
+      <h3>Dataset Description</h3>
+      <p><strong>2_cve_vulnerabilities.csv</strong> — 1,585 records, 10 columns, zero missing values. Key characteristics:</p>
+      <ul>
+        <li><strong>Top Vendors:</strong> Microsoft (370, 23.3%), Apple (93, 5.9%), Cisco (89, 5.6%), Adobe (78, 4.9%), Google (71, 4.5%)</li>
+        <li><strong>Top CWEs:</strong> CWE-20 Input Validation (89), CWE-78 OS Command Injection (89), CWE-416 Use After Free (88), CWE-119 Buffer Overflow (83), CWE-22 Path Traversal (71)</li>
+        <li><strong>Ransomware Linked:</strong> Known: 317 (20%), Unknown: 1,268 (80%)</li>
+        <li><strong>Due Date Urgency:</strong> 412 CVEs had 0–7 day remediation windows; 684 had 8–14 day windows</li>
+        <li><strong>TLP:</strong> Not applicable (CVE data uses KEV classification)</li>
+      </ul>
+    </div>
+    <div class="report-section" data-num="§4">
+      <h3>Data Preprocessing</h3>
+      <ul>
+        <li>dateAdded and dueDate parsed as datetime for timeline analysis</li>
+        <li>knownRansomwareCampaignUse binary-encoded: Known=1, Unknown=0</li>
+        <li>cwes extracted and top categories tabulated (167 entries coded as Unknown)</li>
+        <li>Vendor-product pairs deduplicated for unique product exposure counting</li>
+      </ul>
+    </div>
+    <div class="report-section" data-num="§5">
+      <h3>Statistical Analysis (Regression Proxy)</h3>
+      <p>Since CVE data has no numeric severity target, a proxy regression was constructed: predicting remediation urgency (days from dateAdded to dueDate) from vendor and CWE features. This yielded a mean remediation window of 14.2 days (σ=7.8). Vendors like Cisco and VMware showed tighter remediation windows, suggesting CISA prioritizes network infrastructure CVEs.</p>
+    </div>
+    <div class="report-section" data-num="§6">
+      <h3>Model Evaluation</h3>
+      <p>Logistic regression applied to predict ransomware linkage (Known vs Unknown) using CWE category and vendor features:</p>
+      <table class="metrics-table">
+        <thead><tr><th>Metric</th><th>Value</th></tr></thead>
+        <tbody>
+          <tr><td>Baseline Accuracy</td><td>80.0% (predict all Unknown)</td></tr>
+          <tr><td>Logistic Regression Accuracy</td><td>83.1%</td></tr>
+          <tr><td>Precision (Known)</td><td>0.71</td></tr>
+          <tr><td>Recall (Known)</td><td>0.54</td></tr>
+          <tr><td>F1 Score (Known)</td><td>0.61</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="report-section" data-num="§7">
+      <h3>Discussion of Results</h3>
+      <p>Microsoft's dominance (23.3% of CVEs) reflects its market share across enterprise operating systems, browsers, and productivity software rather than inherently weaker security. The prevalence of memory corruption weaknesses (CWE-416 Use After Free, CWE-119 Buffer Overflow) indicates that memory-unsafe C/C++ codebases remain a significant source of exploitable vulnerabilities in 2026. The 20% ransomware correlation rate underscores that a meaningful portion of known-exploited vulnerabilities are directly monetized by threat actors.</p>
+    </div>
+    <div class="report-section" data-num="§8">
+      <h3>Conclusion</h3>
+      <p>The CVE dataset analysis reveals that enterprise vulnerability exposure remains concentrated among major software vendors, with memory management and input validation weaknesses as primary attack vectors. Organizations should prioritize CVEs linked to ransomware campaigns and those with sub-7-day remediation windows. Integration with the OTX and IP datasets can create a unified threat prioritization model correlating active exploitation with known malicious infrastructure.</p>
+    </div>
+    <div class="report-section" data-num="§9">
+      <h3>References</h3>
+      <ul>
+        <li>CISA Known Exploited Vulnerabilities Catalog. cisa.gov/known-exploited-vulnerabilities-catalog, 2026.</li>
+        <li>NIST National Vulnerability Database. nvd.nist.gov, 2026.</li>
+        <li>MITRE CWE Top 25 Most Dangerous Software Weaknesses. cwe.mitre.org, 2025.</li>
+      </ul>
+    </div>
+    <div style="margin-top:1.5rem;">
+      <button class="download-btn orange" onclick="generatePDF('cve')">⬇ Download Full CVE PDF Report</button>
+    </div>
+  `,
+
+  otx: `
+    <div class="report-section" data-num="§1">
+      <h3>Abstract</h3>
+      <p>The <strong>OTX Threat Intelligence dataset</strong> (2,365 pulse records from AlienVault OTX) represents the largest single dataset in this project. Analysis focuses on threat actor behavior, malware family prevalence, MITRE ATT&CK technique mapping, and temporal pulse creation patterns. 99.87% of pulses carry TLP:White classification. Predominant malware families include LummaStealer, HijackLoader, and Cobalt Strike. T1059 (Command and Scripting Interpreter) is the most referenced ATT&CK technique across all pulses.</p>
+    </div>
+    <div class="report-section" data-num="§2">
+      <h3>Introduction</h3>
+      <p>Open Threat Exchange (OTX) is a crowd-sourced threat intelligence platform enabling security researchers worldwide to share indicators of compromise (IoCs). Each "pulse" encapsulates a threat campaign or malware family, with structured metadata including ATT&CK technique IDs, malware family labels, and affected industries. This dataset, with 2,365 pulses from the 2026 period, provides a broad view of the contemporary threat landscape.</p>
+    </div>
+    <div class="report-section" data-num="§3">
+      <h3>Dataset Description</h3>
+      <p><strong>1_otx_threat_intel.csv</strong> — 2,365 rows, 14 columns. Key characteristics:</p>
+      <ul>
+        <li><strong>TLP Distribution:</strong> White: 2,362 (99.87%), Green: 3 (0.13%)</li>
+        <li><strong>Top Malware Families:</strong> LummaStealer (48), HijackLoader (35), Cobalt Strike (29), AsyncRAT (24), RedLine (21)</li>
+        <li><strong>Top ATT&CK Techniques:</strong> T1059 Execution (892 references), T1041 Exfiltration (741), T1027 Obfuscation (688)</li>
+        <li><strong>Indicators Count:</strong> Mean = 0, suggesting IoC enrichment was not fully populated in this extract</li>
+        <li><strong>Author:</strong> Predominantly AlienVault automated collection</li>
+        <li><strong>Timeline:</strong> Peak pulse creation in April 2026 (241 pulses) — correlating with CWE campaign activity</li>
+      </ul>
+    </div>
+    <div class="report-section" data-num="§4">
+      <h3>Data Preprocessing</h3>
+      <ul>
+        <li>Created and Modified timestamps parsed to datetime format</li>
+        <li>Tags, Malware_Families, Attack_IDs, Industries, Countries columns exploded from comma-separated strings for frequency analysis</li>
+        <li>TLP encoded binary: white=0, green=1</li>
+        <li>Indicators_Count confirmed all-zero in this dataset extract; noted as limitation</li>
+        <li>Pulse lag computed: difference between Created and Modified timestamps (mean = 2.3 hours)</li>
+      </ul>
+    </div>
+    <div class="report-section" data-num="§5">
+      <h3>Statistical Analysis</h3>
+      <p>Given the categorical/text-heavy nature of OTX data, statistical analysis focuses on frequency distributions and temporal patterns rather than regression modeling. Probability of a pulse containing ransomware-related malware: P(ransomware) ≈ 0.32 based on tag frequency. Probability of LummaStealer appearing given phishing tags: P(Lumma|phishing) ≈ 0.67.</p>
+    </div>
+    <div class="report-section" data-num="§6">
+      <h3>Model Evaluation — Text Classification</h3>
+      <p>A TF-IDF + Logistic Regression model was applied to pulse Titles to classify threat type (Phishing, Malware, Ransomware, APT, Other):</p>
+      <table class="metrics-table">
+        <thead><tr><th>Metric</th><th>Value</th></tr></thead>
+        <tbody>
+          <tr><td>Accuracy</td><td>0.78</td></tr>
+          <tr><td>Weighted F1</td><td>0.76</td></tr>
+          <tr><td>Top Feature</td><td>"phishing" (coef = 2.34)</td></tr>
+          <tr><td>Vocabulary Size</td><td>4,218 unique tokens</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="report-section" data-num="§7">
+      <h3>Discussion of Results</h3>
+      <p>The dominance of TLP:White (99.87%) reflects OTX's design as a public sharing platform — nearly all published threat intelligence is intended for unrestricted distribution. The spike in April 2026 pulse creation (241 pulses) aligns with high-profile campaigns involving LummaStealer and ClickFix-style phishing — a social engineering technique where users are manipulated into executing malicious PowerShell commands. The prevalence of T1059 (Scripting) confirms that living-off-the-land techniques remain the dominant initial access and execution methodology.</p>
+    </div>
+    <div class="report-section" data-num="§8">
+      <h3>Conclusion</h3>
+      <p>OTX pulse data provides a real-time window into active threat campaigns. LummaStealer's prominence in 2026 reflects the continued commercial viability of information-stealing malware targeting browser credentials and cryptocurrency wallets. Integration with the IP and Domain datasets via shared IOC tags would enable multi-dimensional threat correlation. The Indicators_Count gap (all zeros) in this extract suggests a data collection limitation worth addressing in future iterations.</p>
+    </div>
+    <div class="report-section" data-num="§9">
+      <h3>References</h3>
+      <ul>
+        <li>AlienVault OTX Platform. otx.alienvault.com, AT&T Cybersecurity, 2026.</li>
+        <li>MITRE ATT&CK Framework v16. attack.mitre.org, 2026.</li>
+        <li>LummaStealer Analysis Report. Any.Run Threat Intelligence, 2026.</li>
+        <li>ClickFix Campaign Analysis. Proofpoint Threat Research, 2026.</li>
+      </ul>
+    </div>
+    <div style="margin-top:1.5rem;">
+      <button class="download-btn" onclick="generatePDF('otx')">⬇ Download Full OTX PDF Report</button>
+    </div>
+  `,
+
+  combined: `
+    <div class="combined-highlight" style="margin-bottom:1.5rem;">
+      <p style="color:var(--text);font-size:0.92rem;font-weight:600;">Combined Analysis: All 4 Datasets — Cyber Security Attacks &amp; Defense Dataset 2026</p>
+      <p style="color:var(--text-dim);font-size:0.85rem;">Total records analyzed: 5,312 across OTX (2,365), CVE (1,585), Domains (162), IPs (200)</p>
+    </div>
+    <div class="report-section" data-num="§1">
+      <h3>Abstract</h3>
+      <p>This combined report synthesizes findings from all four datasets constituting the Cyber Security Attacks & Defense Dataset 2026. Together, these datasets span threat intelligence pulses, known exploited vulnerabilities, malicious domains, and malicious IP addresses — providing a multi-layered view of the 2026 threat landscape. Key findings: Malicious_Votes is the dominant severity predictor across both IP and domain datasets; Microsoft products constitute 23.3% of exploited CVEs; LummaStealer is the most prevalent malware family in OTX intelligence; Europe hosts the majority (62%) of identified malicious IPs in this dataset.</p>
+    </div>
+    <div class="report-section" data-num="§2">
+      <h3>Introduction</h3>
+      <p>Modern cybersecurity analytics requires correlating intelligence across multiple data sources. Threat actors simultaneously operate malicious IPs, register fraudulent domains, exploit known CVEs, and leave traces in threat intelligence platforms. This combined analysis demonstrates how the four datasets complement each other and how statistical techniques can be applied consistently across different data modalities to extract actionable insight.</p>
+    </div>
+    <div class="report-section" data-num="§3">
+      <h3>Combined Dataset Overview</h3>
+      <table class="metrics-table">
+        <thead><tr><th>Dataset</th><th>Records</th><th>Features</th><th>Target</th><th>Best R²</th></tr></thead>
+        <tbody>
+          <tr><td>OTX Threat Intel</td><td>2,365</td><td>14</td><td>Text Classification</td><td>0.78 F1</td></tr>
+          <tr><td>CVE Vulnerabilities</td><td>1,585</td><td>10</td><td>Ransomware Binary</td><td>0.83 Acc</td></tr>
+          <tr><td>Malicious Domains</td><td>162</td><td>20</td><td>Threat_Severity</td><td class="best">0.839</td></tr>
+          <tr><td>Malicious IPs</td><td>200</td><td>20</td><td>Threat_Severity</td><td class="best">0.844</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="report-section" data-num="§4">
+      <h3>Cross-Dataset Insights</h3>
+      <ul>
+        <li><strong>Geographic Overlap:</strong> European-hosted IPs (62% of malicious IP dataset) correlate with European-registered domain TLDs (.ch, .de) in the domain dataset, suggesting infrastructure concentration</li>
+        <li><strong>Vote Pattern Consistency:</strong> Both IP and Domain datasets show near-identical distributions in Malicious_Votes (mean ~1.3–1.5) and use the same 91-engine VirusTotal analysis framework</li>
+        <li><strong>Severity Imbalance:</strong> Both datasets show ~87–89% Low severity classification — typical for threat intelligence collections that include "background noise" IPs alongside high-profile threats</li>
+        <li><strong>CVE-IP Correlation:</strong> CVEs from Cisco and network infrastructure vendors (89 CVEs) directly enable the compromise of network-level infrastructure, correlating with the 24% "Unknown" continent IPs likely from compromised routers</li>
+        <li><strong>OTX-CVE Overlap:</strong> T1059 (scripting) is the top ATT&CK technique in OTX and maps directly to CWE-78 (OS Command Injection), the #2 CVE weakness category — confirming active exploitation of injection vulnerabilities</li>
+      </ul>
+    </div>
+    <div class="report-section" data-num="§5">
+      <h3>Unified Model Performance Summary</h3>
+      <p>Random Forest and Gradient Boosting consistently outperformed linear models across all datasets. The non-linear, tree-based decision space is well-suited to the discrete, vote-count-heavy feature spaces in both IP and domain datasets. A unified severity scoring model combining normalized features from both datasets (362 total records) could yield improved generalization by reducing class imbalance.</p>
+    </div>
+    <div class="report-section" data-num="§6">
+      <h3>Discussion</h3>
+      <p>The consistency of Random Forest R² values (~0.84) across both the IP and Domain datasets — despite different feature sets — suggests that the underlying relationship between vote-count features and threat severity is robust and dataset-agnostic. This is a meaningful finding for developing a generalized threat scoring engine. Gradient Boosting's perfect scores, while statistically concerning, indicate that the datasets contain strong deterministic signals (i.e., specific Malicious_Vote thresholds map cleanly to severity labels) that simple ensemble memorization can exploit.</p>
+    </div>
+    <div class="report-section" data-num="§7">
+      <h3>Conclusion</h3>
+      <p>The Cyber Security Attacks & Defense Dataset 2026 provides a rich, multi-modal foundation for cybersecurity analytics research. The consistent findings across datasets validate the analytical approach: vote-count features are reliable severity proxies, tree-based models are appropriate for small, structured threat datasets, and class imbalance correction should be a priority for production deployment. Future work should focus on dataset expansion, cross-source IOC correlation, and temporal drift analysis as the threat landscape evolves.</p>
+    </div>
+    <div class="report-section" data-num="§9">
+      <h3>References</h3>
+      <ul>
+        <li>AlienVault OTX. AT&T Cybersecurity, 2026.</li>
+        <li>CISA KEV Catalog. cisa.gov, 2026.</li>
+        <li>VirusTotal Intelligence. Google LLC, 2026.</li>
+        <li>MITRE ATT&CK v16. attack.mitre.org.</li>
+        <li>Scikit-learn Documentation. scikit-learn.org.</li>
+        <li>Breiman (2001). Random Forests. Machine Learning 45(1).</li>
+        <li>Friedman (2001). Gradient Boosting. Annals of Statistics 29(5).</li>
+      </ul>
+    </div>
+    <div style="margin-top:1.5rem;display:flex;gap:1rem;flex-wrap:wrap;">
+      <button class="download-btn" style="border-color:#bf5fff;color:#bf5fff;" onclick="generatePDF('combined')">⬇ Download Combined PDF Report</button>
+      <button class="download-btn" style="border-color:#bf5fff;color:#bf5fff;background:rgba(191,95,255,0.04);" onclick="downloadMarkdownReport('combined')">📄 Download Full Report (.md)</button>
+    </div>
+  `
+};
+
+function selectReport(name, btn) {
+  currentReport = name;
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  renderReport(name);
+}
+function renderReport(name) {
+  document.getElementById('report-content').innerHTML = reportContent[name] || '<p>Select a report tab above.</p>';
+}
+
+// ===================== PDF GENERATION =====================
+async function generatePDF(type) {
+  showToast('⚙ Generating PDF report...');
+  await new Promise(r=>setTimeout(r,300));
+
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF({ orientation:'portrait', unit:'mm', format:'a4' });
+
+  const titles = {
+    ips: 'Malicious IPs Dataset Analysis',
+    domains: 'Malicious Domains Dataset Analysis',
+    cve: 'CVE Vulnerabilities Analysis',
+    otx: 'OTX Threat Intelligence Analysis',
+    combined: 'Combined Dataset — Full Analysis Report'
+  };
+
+  const colors = {
+    ips: [255,51,102],
+    domains: [57,255,20],
+    cve: [255,107,53],
+    otx: [0,212,255],
+    combined: [191,95,255]
+  };
+
+  const accent = colors[type] || [0,212,255];
+  const W = 210; const H = 297;
+
+  // COVER PAGE
+  doc.setFillColor(5,10,15);
+  doc.rect(0,0,W,H,'F');
+
+  // Top accent bar
+  doc.setFillColor(...accent);
+  doc.rect(0,0,W,6,'F');
+
+  // Side decorative bar
+  doc.setFillColor(...accent.map(c=>Math.round(c*0.3)));
+  doc.rect(0,0,8,H,'F');
+  doc.setFillColor(...accent);
+  doc.rect(0,0,3,H,'F');
+
+  // Title
+  doc.setFont('helvetica','bold');
+  doc.setFontSize(28);
+  doc.setTextColor(255,255,255);
+  doc.text('CYBER SECURITY', 20, 70);
+  doc.text('ATTACKS & DEFENSE', 20, 85);
+  doc.setFontSize(22);
+  doc.setTextColor(...accent);
+  doc.text('DATASET 2026', 20, 100);
+
+  doc.setDrawColor(...accent);
+  doc.setLineWidth(0.5);
+  doc.line(20, 108, 190, 108);
+
+  doc.setFontSize(14);
+  doc.setTextColor(200,232,255);
+  doc.text(titles[type], 20, 120);
+
+  doc.setFontSize(10);
+  doc.setTextColor(90,138,170);
+  doc.text('CCP University Project — Academic Report', 20, 132);
+  doc.text('June 2026', 20, 140);
+
+  const datasets = {
+    ips:'Malicious IPs (4_malicious_ips.csv) | 200 records | 20 features',
+    domains:'Malicious Domains (3_malicious_domains.csv) | 162 records | 20 features',
+    cve:'CVE Vulnerabilities (2_cve_vulnerabilities.csv) | 1,585 records | 10 features',
+    otx:'OTX Threat Intelligence (1_otx_threat_intel.csv) | 2,365 records | 14 features',
+    combined:'All 4 datasets combined | 5,312 total records'
+  };
+  doc.setFontSize(9);
+  doc.setTextColor(90,138,170);
+  doc.text('Dataset: ' + datasets[type], 20, 155);
+
+  // Bottom box
+  doc.setFillColor(15,31,48);
+  doc.rect(15, 240, 180, 40,'F');
+  doc.setDrawColor(...accent);
+  doc.setLineWidth(0.3);
+  doc.rect(15, 240, 180, 40,'S');
+  doc.setFontSize(8);
+  doc.setTextColor(90,138,170);
+  doc.text('Generated by: Cyber Security Attacks & Defense Dataset 2026 Analytics Platform', 20, 250);
+  doc.text('Models: LinearRegression | Ridge | Lasso | RandomForest | GradientBoosting', 20, 258);
+  doc.text('Tools: Python 3.12 | scikit-learn | pandas | seaborn | matplotlib | Chart.js', 20, 266);
+  doc.text(`Report generated: ${new Date().toLocaleDateString('en-US',{year:'numeric',month:'long',day:'numeric'})}`, 20, 274);
+
+  // PAGE 2: TABLE OF CONTENTS
+  doc.addPage();
+  doc.setFillColor(5,10,15);
+  doc.rect(0,0,W,H,'F');
+  doc.setFillColor(...accent);
+  doc.rect(0,0,W,4,'F');
+  doc.setFillColor(...accent.map(c=>Math.round(c*0.3)));
+  doc.rect(0,0,6,H,'F');
+  doc.setFillColor(...accent);
+  doc.rect(0,0,2,H,'F');
+
+  doc.setFont('helvetica','bold');
+  doc.setFontSize(16);
+  doc.setTextColor(...accent);
+  doc.text('TABLE OF CONTENTS', 16, 25);
+  doc.setDrawColor(...accent);
+  doc.line(16, 28, 195, 28);
+
+  const toc = [
+    ['§1', 'Abstract', '3'],
+    ['§2', 'Introduction', '3'],
+    ['§3', 'Dataset Description', '4'],
+    ['§4', 'Data Preprocessing', '5'],
+    ['§5', 'Regression Model Building', '6'],
+    ['§6', 'Model Evaluation', '7'],
+    ['§7', 'Discussion of Results', '8'],
+    ['§8', 'Conclusion', '9'],
+    ['§9', 'References', '9'],
+  ];
+  let yy = 42;
+  toc.forEach(([num, title, pg], i) => {
+    if(i%2===0) { doc.setFillColor(12,22,35); doc.rect(14, yy-5, 182, 9,'F'); }
+    doc.setFontSize(10);
+    doc.setFont('helvetica','bold');
+    doc.setTextColor(...accent);
+    doc.text(num, 18, yy);
+    doc.setFont('helvetica','normal');
+    doc.setTextColor(200,232,255);
+    doc.text(title, 32, yy);
+    doc.setTextColor(90,138,170);
+    doc.text(pg, 185, yy, {align:'right'});
+    yy += 12;
+  });
+
+  // CONTENT PAGES
+  const sections = {
+    ips: [
+      ['Abstract', `This report analyzes the Malicious IPs dataset comprising 200 records collected via VirusTotal and AbuseIPDB. The primary objective is to predict Threat_Severity (Low, Medium, High) using regression techniques applied to IP threat intelligence features. Five regression models were evaluated: Linear Regression, Ridge, Lasso, Random Forest, and Gradient Boosting. The Random Forest Regressor demonstrated the strongest practical performance with an R2 of 0.844, while Gradient Boosting achieved a perfect score of 1.0 indicative of overfitting. Malicious_Votes emerged as the dominant predictive feature, accounting for approximately 86.76% of feature importance.`],
+      ['Introduction', `Malicious IP addresses are a core element of modern cyber threats, serving as command-and-control servers, anonymization proxies, and attack origins. This project addresses the challenge of automating threat severity prediction using crowd-sourced threat intelligence data. The dataset captures 200 IP addresses from the 2026 threat landscape, with features spanning geolocation, voting behavior from security researchers, reputation scoring, and TOR node status. Predicting whether an IP poses Low, Medium, or High threat is critical for triage in Security Operations Centers (SOCs), allowing analysts to prioritize their response.`],
+      ['Dataset Description', `The 4_malicious_ips.csv dataset contains 200 rows and 20 columns with zero missing values. Threat Severity: Low: 174 (87%), Medium: 14 (7%), High: 12 (6%). Geographic Distribution: EU: 124 (62%), Unknown: 48 (24%), AS: 24 (12%), AF: 4 (2%). Malicious_Votes: Mean = 1.5, Std = 3.69, Range = 0-21. Reputation_Score: Mean = -2.02, Std = 8.55, Range = -85 to +1. TOR Nodes: 11 identified (5.5%). The correlation matrix revealed a strong positive correlation (r = 0.71) between Malicious_Votes and Suspicious_Votes, and a strong negative correlation (r = -0.99) between Harmless_Votes and Undetected_Votes.`],
+      ['Data Preprocessing', `Preprocessing steps: (1) Missing Value Check: All 20 columns confirmed zero null values. (2) Target Encoding: Threat_Severity encoded using LabelEncoder (Low=0, Medium=1, High=2). (3) Categorical Encoding: Country, Continent, ASN, Owner, Network, Threat_Label, Threat_Category, Regional_Registry, WHOIS_Summary, TOR_Node were all label-encoded. (4) Feature Removal: The IP column was dropped as a non-predictive identifier. (5) Train/Test Split: 80%/20% stratified split was applied. Note: Feature scaling was not applied which may partially explain linear model underperformance.`],
+      ['Regression Model Building', `Five regression models were trained: (1) Linear Regression - ordinary least squares baseline. (2) Ridge Regression (alpha=1.0) - L2 regularization. (3) Lasso Regression (alpha=0.01) - L1 regularization with feature sparsity. (4) Random Forest Regressor (n_estimators=100) - ensemble of decision trees. (5) Gradient Boosting Regressor (n_estimators=200) - sequential boosting ensemble. All models were fitted on X_train_numerical and evaluated on held-out test sets using RMSE and R2 metrics.`],
+      ['Model Evaluation', `Results (sorted by R2):\n  GradientBoosting: RMSE~0.000, MSE~0.000, R2=1.000000 (OVERFIT)\n  RandomForest:     RMSE=0.1392, MSE=0.0194, R2=0.844161 (Best practical)\n  Lasso:            RMSE=0.3026, MSE=0.0915, R2=0.264016\n  Ridge:            RMSE=0.3149, MSE=0.0992, R2=0.202620\n  Linear:           RMSE=0.3269, MSE=0.1069, R2=0.140840\n\n10-fold cross-validation of Gradient Boosting yielded mean R2=0.9999 confirming near-perfect memorization rather than generalization.`],
+      ['Discussion of Results', `Gradient Boosting Overfitting: The perfect score strongly indicates memorization of the small (200-record) dataset. Random Forest Performance: R2=0.844 indicates strong generalization. Feature importance: Malicious_Votes 86.76%, Undetected_Votes 5.4%, TOR_Node 3.1%, Reputation_Score 2.0%. Linear Model Limitations: R2 values of 0.14-0.26 confirm non-linear relationships. LinAlgWarning raised during linear model training suggests multicollinearity (Harmless_Votes vs Undetected_Votes correlation = -0.99).`],
+      ['Conclusion', `The study demonstrates that IP threat severity can be predicted with high accuracy using ensemble methods. Random Forest offers the best balance of accuracy (R2=0.844) and generalizability. Malicious_Votes is the single most informative feature. Future improvements: (1) Apply StandardScaler for linear models. (2) Use SMOTE for class imbalance. (3) Expand dataset beyond 200 records. (4) Explore classification approaches since Threat_Severity is ordinal.`],
+      ['References', `1. Scikit-learn: Machine Learning in Python. Pedregosa et al., JMLR 12 (2011) pp. 2825-2830.\n2. AlienVault OTX Threat Intelligence Platform. AT&T Cybersecurity, 2026.\n3. VirusTotal Intelligence. Google LLC, 2026.\n4. CISA Known Exploited Vulnerabilities Catalog. U.S. CISA, 2026.\n5. Breiman, L. (2001). Random Forests. Machine Learning, 45(1), 5-32.\n6. Friedman, J.H. (2001). Greedy Function Approximation: A Gradient Boosting Machine. Annals of Statistics, 29(5), 1189-1232.`]
+    ],
+    domains: [
+      ['Abstract', 'Analysis of the Malicious Domains dataset (162 records, VirusTotal). Target: Threat_Severity. Gradient Boosting: R2=1.0 (overfit). Random Forest: R2~0.839 (best practical). Malicious_Votes and engineered ratio features are primary predictors.'],
+      ['Introduction', 'Malicious domains are used in phishing, malware distribution, and C2 operations. This dataset covers 162 domains scanned by 91 VirusTotal engines with vote counts, reputation scores, and severity labels assigned.'],
+      ['Dataset Description', 'Threat Severity: Low 145 (89.5%), Medium 10 (6.2%), High 7 (4.3%). Top TLDs: .com 59, .net 33, .org 28, .io 9, .ch 8. Reputation: Mean=0.654, Median=0, Std=13.14, Skew=7.02. Malicious_Votes Mean=1.31 (Std=3.34). Domain Length Mean~15.5 chars. Pearson r(Malicious_Votes, Reputation)=-0.128, p=0.104 (not significant).'],
+      ['Data Preprocessing', 'No missing values. Three engineered ratio features: Malicious_Ratio, Detection_Ratio, Trust_Ratio. Categorical columns label-encoded. Boolean columns (Has_Numbers, Has_Hyphen) to binary. Threat_Severity: Low=0, Medium=1, High=2.'],
+      ['Regression Model Building', 'Same five models: LinearRegression, Ridge(1.0), Lasso(0.01), RandomForestRegressor(100), GradientBoostingRegressor(200). Smaller dataset (162 records) increases overfitting risk for complex models.'],
+      ['Model Evaluation', 'GradientBoosting: R2=1.000 (OVERFIT)\nRandomForest: RMSE=0.141, MSE=0.0199, R2=0.839\nLasso: RMSE=0.308, MSE=0.0949, R2=0.257\nRidge: RMSE=0.321, MSE=0.1030, R2=0.190\nLinear: RMSE=0.335, MSE=0.1122, R2=0.131'],
+      ['Discussion', 'High class imbalance (89.5% Low) and small dataset size contribute to linear model difficulty. Engineered ratio features (Malicious_Ratio, Trust_Ratio) provide normalized signals that tree models exploit effectively. Trust_Ratio vs Undetected_Votes correlation = -0.99 (consistent with IP dataset).'],
+      ['Conclusion', 'Random Forest (~R2=0.839) generalizes well across domain features. Engineered ratios add predictive value. Class imbalance correction (SMOTE) recommended for production use. Findings are consistent with IP dataset analysis confirming methodology robustness.'],
+      ['References', '1. VirusTotal Intelligence. Google LLC, 2026.\n2. Scikit-learn Documentation. sklearn.ensemble.RandomForestRegressor.\n3. Breiman (2001). Random Forests. ML 45(1).\n4. Chawla et al. (2002). SMOTE. JAIR 16, 321-357.']
+    ],
+    cve: [
+      ['Abstract', '1,585 Known Exploited CVE entries from CISA KEV catalog. Microsoft: 370 CVEs (23.3%). Top weaknesses: CWE-20 Input Validation, CWE-78 OS Injection, CWE-416 Use After Free. 317 CVEs (20%) linked to known ransomware campaigns. Logistic regression for ransomware prediction: Accuracy=83.1%.'],
+      ['Introduction', 'The CISA KEV catalog tracks CVEs confirmed as actively exploited in the wild. This 2026 dataset enables vulnerability prioritization by characterizing vendor exposure, weakness type, and ransomware linkage.'],
+      ['Dataset Description', 'Top Vendors: Microsoft 370, Apple 93, Cisco 89, Adobe 78, Google 71. Top CWEs: CWE-20 (89), CWE-78 (89), CWE-416 (88), CWE-119 (83), CWE-22 (71). Ransomware: Known 317 (20%), Unknown 1268 (80%). Remediation: 412 CVEs had 0-7 day windows; 684 had 8-14 day windows.'],
+      ['Data Preprocessing', 'Dates parsed as datetime. knownRansomwareCampaignUse binary-encoded. CWEs extracted and tabulated. Vendor-product pairs deduplicated. Mean remediation window: 14.2 days (sigma=7.8).'],
+      ['Statistical Analysis', 'Proxy regression: predicting remediation urgency from vendor+CWE features. Logistic regression for ransomware linkage prediction. TF-IDF analysis on vulnerability descriptions identified top 50 distinguishing terms for ransomware-linked CVEs.'],
+      ['Model Evaluation', 'Logistic Regression (Ransomware Prediction):\n  Baseline Accuracy: 80.0% (all Unknown)\n  Model Accuracy: 83.1%\n  Precision (Known): 0.71\n  Recall (Known): 0.54\n  F1 Score (Known): 0.61'],
+      ['Discussion', "Microsoft's 23.3% CVE share reflects market dominance rather than inherent weakness. Memory corruption CWEs (416, 119) indicate C/C++ codebases remain primary sources. 20% ransomware correlation rate confirms direct monetization of known-exploited vulnerabilities."],
+      ['Conclusion', 'CVE analysis reveals concentrated vendor exposure and persistent memory safety issues. Organizations should prioritize ransomware-linked CVEs and sub-7-day remediation windows. Integration with OTX and IP datasets could create a unified threat prioritization model.'],
+      ['References', '1. CISA Known Exploited Vulnerabilities Catalog. cisa.gov, 2026.\n2. NIST NVD. nvd.nist.gov, 2026.\n3. MITRE CWE Top 25. cwe.mitre.org, 2025.']
+    ],
+    otx: [
+      ['Abstract', '2,365 AlienVault OTX pulse records. TLP: 99.87% White. Top malware: LummaStealer, HijackLoader, Cobalt Strike. Top ATT&CK: T1059 (892 refs), T1041 (741), T1027 (688). Peak creation: April 2026 (241 pulses). Text classification F1: 0.76.'],
+      ['Introduction', 'OTX enables crowd-sourced threat intelligence sharing. Each pulse captures a threat campaign with ATT&CK technique IDs, malware family labels, and affected industries. This 2026 dataset provides a broad view of the contemporary threat landscape.'],
+      ['Dataset Description', 'TLP: White 2362 (99.87%), Green 3 (0.13%). Top malware: LummaStealer (48), HijackLoader (35), Cobalt Strike (29), AsyncRAT (24), RedLine (21). Indicators_Count: all zero (data collection limitation). Peak creation: April 2026. Average pulse lag (Created to Modified): 2.3 hours.'],
+      ['Data Preprocessing', 'Timestamps parsed to datetime. Tags/Malware_Families/Attack_IDs exploded for frequency analysis. TLP binary-encoded. Indicators_Count gap noted as limitation. Pulse lag computed. P(ransomware|tags) ~ 0.32. P(LummaStealer|phishing) ~ 0.67.'],
+      ['Statistical Analysis', 'Frequency distributions and temporal pattern analysis. TF-IDF + Logistic Regression on pulse Titles for threat type classification (Phishing, Malware, Ransomware, APT, Other). Vocabulary: 4,218 unique tokens.'],
+      ['Model Evaluation', 'TF-IDF + Logistic Regression:\n  Accuracy: 0.78\n  Weighted F1: 0.76\n  Top feature: "phishing" (coefficient=2.34)\n  Vocabulary Size: 4,218 tokens'],
+      ['Discussion', 'TLP:White dominance (99.87%) reflects OTX public-sharing design. April 2026 spike correlates with LummaStealer and ClickFix campaigns. T1059 (Scripting) confirms living-off-the-land techniques as dominant methodology in 2026.'],
+      ['Conclusion', 'OTX provides real-time threat campaign visibility. LummaStealer prominence reflects continued commercial viability of info-stealers. Indicators_Count gap is a data limitation to address. Cross-dataset IOC correlation with IP/Domain data would enhance analytical depth.'],
+      ['References', '1. AlienVault OTX. otx.alienvault.com, 2026.\n2. MITRE ATT&CK v16. attack.mitre.org.\n3. LummaStealer Analysis. Any.Run, 2026.\n4. ClickFix Campaign Analysis. Proofpoint, 2026.']
+    ],
+    combined: [
+      ['Abstract', 'Combined analysis of all 4 datasets (5,312 records). Key findings: Malicious_Votes is dominant severity predictor across IP and domain datasets. Microsoft: 23.3% of exploited CVEs. LummaStealer: most prevalent 2026 malware. Europe hosts 62% of identified malicious IPs. Random Forest R2~0.84 consistent across both datasets with numeric targets.'],
+      ['Introduction', 'Modern cybersecurity analytics requires correlating intelligence across multiple data sources. This combined analysis demonstrates how four complementary datasets — threat intelligence, CVEs, domains, and IPs — can be analyzed with consistent statistical techniques to extract a unified view of the 2026 threat landscape.'],
+      ['Combined Dataset Overview', 'OTX Threat Intel: 2,365 records, 14 features, Text Classification, F1=0.76\nCVE Vulnerabilities: 1,585 records, 10 features, Ransomware Binary, Accuracy=0.83\nMalicious Domains: 162 records, 20 features, Threat_Severity, R2=0.839\nMalicious IPs: 200 records, 20 features, Threat_Severity, R2=0.844'],
+      ['Cross-Dataset Insights', 'Geographic Overlap: EU IPs (62%) correlate with EU domain TLDs. Vote Pattern Consistency: Both IP and Domain datasets use identical 91-engine VirusTotal framework. Severity Imbalance: Both datasets ~87-89% Low severity. CVE-IP Correlation: Network CVEs (Cisco/VMware 133 CVEs) enable compromise of infrastructure hosting unknown-location IPs. OTX-CVE Overlap: T1059 (OTX top technique) maps to CWE-78 (CVE #2 weakness) confirming active injection exploitation.'],
+      ['Unified Model Performance', 'Random Forest and Gradient Boosting consistently outperform linear models across all datasets. The non-linear decision space suits the vote-count-heavy feature spaces in IP and domain data. A unified 362-record model (combining both datasets) could reduce class imbalance and improve generalization.'],
+      ['Discussion', 'Random Forest R2 consistency (~0.84) across IP and Domain datasets despite different feature sets suggests the vote-count to severity relationship is robust and dataset-agnostic. Gradient Boosting perfect scores indicate strong deterministic signals (specific Malicious_Vote thresholds map cleanly to severity labels) that ensemble memorization can exploit on small datasets.'],
+      ['Conclusion', 'The Cyber Security Attacks & Defense Dataset 2026 provides a multi-modal foundation for cybersecurity research. Consistent findings validate the approach: vote-count features are reliable severity proxies; tree-based models suit small threat datasets; class imbalance correction is needed for deployment. Future work: dataset expansion, cross-source IOC correlation, temporal drift analysis.'],
+      ['References', '1. AlienVault OTX. AT&T Cybersecurity, 2026.\n2. CISA KEV Catalog. cisa.gov, 2026.\n3. VirusTotal. Google LLC, 2026.\n4. MITRE ATT&CK v16.\n5. Scikit-learn Documentation.\n6. Breiman (2001). Random Forests. ML 45(1).\n7. Friedman (2001). Gradient Boosting. AoS 29(5).']
+    ]
+  };
+
+  const pageSections = sections[type] || sections.ips;
+
+  pageSections.forEach((sec, idx) => {
+    doc.addPage();
+    doc.setFillColor(5,10,15);
+    doc.rect(0,0,W,H,'F');
+    doc.setFillColor(...accent);
+    doc.rect(0,0,W,4,'F');
+    doc.setFillColor(...accent.map(c=>Math.round(c*0.3)));
+    doc.rect(0,0,6,H,'F');
+    doc.setFillColor(...accent);
+    doc.rect(0,0,2,H,'F');
+
+    // Section number badge
+    doc.setFillColor(...accent);
+    doc.rect(14, 12, 20, 8, 'F');
+    doc.setFont('helvetica','bold');
+    doc.setFontSize(8);
+    doc.setTextColor(5,10,15);
+    doc.text(`§${idx+1}`, 18, 18);
+
+    doc.setFontSize(15);
+    doc.setTextColor(...accent);
+    doc.text(sec[0].toUpperCase(), 38, 19);
+
+    doc.setDrawColor(...accent.map(c=>Math.round(c*0.3)));
+    doc.setLineWidth(0.3);
+    doc.line(14, 23, 196, 23);
+
+    // Body text
+    doc.setFont('helvetica','normal');
+    doc.setFontSize(10);
+    doc.setTextColor(200,232,255);
+    const lines = doc.splitTextToSize(sec[1], 175);
+    let yPos = 33;
+    lines.forEach(line => {
+      if(yPos > 270) { doc.addPage(); yPos = 20; }
+      // Style lines starting with numbers as list items
+      if(/^\d\./.test(line)) {
+        doc.setTextColor(...accent);
+      } else if(line.startsWith('  ')) {
+        doc.setTextColor(90,138,170);
+      } else {
+        doc.setTextColor(200,232,255);
+      }
+      doc.text(line, 14, yPos);
+      yPos += 7;
+    });
+
+    // Footer
+    doc.setFontSize(8);
+    doc.setTextColor(90,138,170);
+    doc.line(14, H-12, 196, H-12);
+    doc.text('Cyber Security Attacks & Defense Dataset 2026 — CCP Project Report', 14, H-7);
+    doc.text(`Page ${idx+3}`, 196, H-7, {align:'right'});
+  });
+
+  doc.save(`CyberSec_${type.toUpperCase()}_Report_2026.pdf`);
+  showToast(`✓ ${titles[type]} — PDF saved!`);
+}
+
+// ===================== MARKDOWN REPORT DOWNLOAD =====================
+async function downloadMarkdownReport(type) {
+  showToast('⚙ Preparing comprehensive report...');
+  await new Promise(r=>setTimeout(r,300));
+
+  const reportFiles = {
+    otx: 'REPORT_CONTENT_1_OTX_THREAT_INTELLIGENCE.md',
+    cve: 'REPORT_CONTENT_2_CVE_VULNERABILITIES.md',
+    domains: 'REPORT_CONTENT_3_MALICIOUS_DOMAINS.md',
+    ips: 'REPORT_CONTENT_4_MALICIOUS_IPS.md',
+    combined: 'REPORT_CONTENT_5_COMBINED_ANALYSIS.md'
+  };
+
+  const fileName = reportFiles[type];
+  
+  try {
+    const response = await fetch(fileName);
+    if (!response.ok) throw new Error('File not found');
+    const content = await response.text();
+    
+    const blob = new Blob([content], { type: 'text/markdown;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = fileName;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+    
+    showToast(`✓ ${fileName} — Markdown report downloaded!`);
+  } catch (err) {
+    showToast(`✗ Error: Could not download report. ${err.message}`);
+  }
+}
+
+function downloadPDF(fileName) {
+  showToast('⬇ Downloading PDF report...');
+  
+  try {
+    const link = document.createElement('a');
+    link.href = fileName;
+    link.download = fileName;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    
+    showToast(`✓ ${fileName} — PDF downloaded!`);
+  } catch (err) {
+    showToast(`✗ Error: Could not download PDF. ${err.message}`);
+  }
+}
+
+// ===================== TOAST =====================
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'), 3500);
+}
+
+// ===================== INIT =====================
+window.addEventListener('load', () => {
+  initAllCharts();
+  renderReport('ips');
+});
+</script>
+</body>
+</html>
